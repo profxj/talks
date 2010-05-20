@@ -21,11 +21,11 @@ pro fig_silhouette
   xrng=[1300., 1320]
   plot, [0], [0], color=clr.lightgray, background=clr.black, charsize=csz,$
         xmargin=xmrg, ymargin=ymrg, ytitle='Relative Flux', $
-        xtitle='Wavelength', yrange=yrng, thick=4, $
+        xtitle='Wavelength', yrange=yrng, thick=5, $
         xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata, $
         xtickn=xspaces
 
-  oplot, wave, emiss, color=clr.lightgray, thick=5
+  oplot, wave, emiss, color=clr.lightgray, thick=9
 
   x_psclose
   !p.multi = [0,1,1]
@@ -45,7 +45,7 @@ pro fig_silhouette
         xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata, $
         xtickn=xspaces
 
-  oplot, wave, smth_spec, color=clr.lightgray, thick=5
+  oplot, wave, smth_spec, color=clr.lightgray, thick=9
   oplot, xrng, [0., 0.], color=clr.yellow, lines=2, thick=3
 
   x_psclose

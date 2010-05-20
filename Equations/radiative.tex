@@ -46,6 +46,151 @@ $$
 }
 $$
 
+% Natural broadening
+$$
+{\color{Yellow} 
+\phi_N(\nu) = \frac{2}{\pi} 
+\ltk \frac{(\gamma_j + \gamma_k)/4\pi^2}{(\nu - \nu_{jk})^2
++ (\gamma_j + \gamma_k)^2 / (4\pi)^2} \rtk
+}
+$$
+
+% gamma
+$$
+{\color{Yellow} 
+\gamma_j \equiv \smm_{i<j} A_{ij}
+}
+$$
+
+% Doppler parameter
+$$
+{\color{Yellow} 
+b = \sqrt{b^2_{\rm Therm} + b^2_{\rm turb}}
+}
+$$
+
+% Thermal Doppler
+$$
+{\color{Yellow} 
+b^2_{\rm Therm} = \frac{2kT}{m_A}
+}
+$$
+
+% Doppler line profile
+$$
+{\color{Yellow} 
+\phi_D(v) = \frac{1}{b\sqrt{\pi}} \, \exp \ltk -\frac{v^2}{b^2} \rtk
+}
+$$
+
+% Voigt
+$$
+{\color{Yellow} 
+	\phi_V(\nu) = \frac{\gamma}{4\pi} \intl_{-\infty}^\infty
+	\frac{ \frac{1}{b \sqrt{\pi}} \, \exp \ltp - \frac{v^2}{b^2}
+            \rtp}
+	{\ltp \nu-\nu_{jk}-\nu_{jk}v/c \rtp^2 + \ltp \gamma/4\pi
+          \rtp^2} \, dv
+}
+$$
+
+%$$
+%{\color{Yellow} 
+%	H(a,u) = \frac{a}{\pi} \intl_{-\infty}^\infty 
+%		\frac{\rme^{-y^2} \, dy}{a^2 + (u-y)^2}
+%}
+%$$
+%
+%$$
+%{\color{Yellow} 
+%a \equiv \frac{\gamma}{4\pi \Delta\nu_D}
+%\;\;\;\; u \equiv \frac{\nu-\nu_{jk}}{\Delta\nu_D}
+%}
+%$$
+%
+%$$
+%{\color{Yellow} 
+%	\phi_V(\nu) = \frac{H(a,u)}{\nu_D \sqrt{\pi}}
+%}
+%$$
+
+% Radiative Transfer
+$$
+{\color{Yellow} 
+	\frac{dI_\nu}{dl} = - \kappa_\nu I_\nu + j_\nu
+}
+$$
+
+$$
+{\color{Yellow} 
+	I_\nu = I_\nu^0 \, \exp(-\tau_\nu)
+}
+$$
+
+
+% Opacity
+$$
+{\color{Yellow} 
+	\kappa_\nu = s_\nu n
+}
+$$
+
+$$
+{\color{Yellow} 
+	s_\nu = \frac{\pi e^2}{m_e c} f \; \phi(\nu)
+}
+$$
+
+
+
+% Optial depth
+$$
+{\color{Yellow} 
+	d\tau_\nu = \kappa_\nu dl
+}
+$$
+
+$$
+{\color{Yellow} 
+	\tau_\nu = s_\nu \, N
+}
+$$
+
+{\color{Yellow} 
+\begin{align}
+	\tau_0 &= \frac{\pi e^2}{m_e c} \, N \, f \, \phi(\nu=\nu_{jk}) \\
+        &= \frac{\sqrt{\pi} e^2}{m_e c} \, \frac{N \, f \,
+          \lambda_{jk}}{b} \;\;\; \rm [Doppler]
+\end{align}
+}
+
+% Column
+$$
+{\color{Yellow} 
+N = \int \, n \, dl
+}
+$$
+
+% Lya
+$$
+{\color{Yellow} 
+       \tau_0^{\rm Ly\alpha} = \frac{N_{\rm HI}}{10^{13.1} \cm{-2}} \ltk \frac{b}{10 \mkms}
+       \rtk^{-1}
+}
+$$
+
+% Equivalent Width
+$$
+{\color{Yellow} 
+	W_\lambda = \intl_0^\infty \ltk 1 - \frac{I_\nu}{I_\nu^0} \rtk \, d\lambda
+}
+$$
+
+$$
+{\color{Yellow} 
+	W_\lambda = \intl_0^\infty \ltk 1 - \exp(-\tau_\lambda) \rtk \, d\lambda
+}
+$$
 
 }
 
