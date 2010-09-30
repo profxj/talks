@@ -16,6 +16,7 @@ pro fig_mgii, RREAL=rreal
   nrm2 = median(noscatt_fx[where(wv GT 2815)])
   noscatt_fx = noscatt_fx/nrm2
 
+  thk = 11
   ;;; BEGIN PLOTS
   x_psopen, psfile, /maxs
   clr = getcolor(/load)
@@ -26,10 +27,10 @@ pro fig_mgii, RREAL=rreal
      xrng=[2786., 2812]
      plot, [0], [0], color=clr.black, background=clr.white, charsize=csz,$
            ytitle='Normalized Flux', ymarg=[5,5], xmarg=[7,1], $
-           xtitle='Wavelength (Ang)', yrange=yrng, thick=4, $
+           xtitle='Wavelength (Ang)', yrange=yrng, thick=thk, xthic=thk, ythic=thk, $
            xrange=xrng, ystyle=1, xstyle=9, psym=1, /nodata
      
-     oplot, wv, fx, color=clr.black, psym=10, thick=4
+     oplot, wv, fx, color=clr.black, psym=10, thick=thk
      
      oplot, replicate(2796.352,2), yrng, color=clr.blue, linesty=2
      oplot, replicate(2803.531,2), yrng, color=clr.blue, linesty=2
@@ -37,12 +38,12 @@ pro fig_mgii, RREAL=rreal
      ylbl = 0.90
      xyouts, xrng[0]+xlbl*(xrng[1]-xrng[0]), yrng[1]*ylbl, $
              'MgII', color=clr.black, charsiz=lsz
-     oplot, xrng, [1., 1.], color=clr.green, linestyle=1, thick=3
+     oplot, xrng, [1., 1.], color=clr.green, linestyle=1, thick=5
 
-     if qq GT 0 then oplot, wv, noscatt_fx, color=clr.black, linesty=1, thick=4 
+     if qq GT 0 then oplot, wv, noscatt_fx, color=clr.darkgray, thick=thk 
      
      xrng2 = (xrng/2796.352 - 1)*3e5
-     axis, xaxis=1, charsiz=csz, xsty=1, xrang=xrng2, xtitl='Velocity (km/s) Relative to MgII 2796'
+     axis, xaxis=1, charsiz=csz, xsty=1, xrang=xrng2, xtitl='Velocity (km/s) Relative to MgII 2796', xthic=thk
 
   endfor
 

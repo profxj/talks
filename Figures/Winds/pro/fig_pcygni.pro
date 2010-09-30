@@ -47,13 +47,13 @@ pro fig_pcygni, psfile
      plot, [0],  [0],  color=clr.black, $
            background=clr.black, charsize=csz,$
            xmargin=[7,2.5], ymargin=[3.5,4.5], xtitle='Wavelength (Ang)', $
-           ytitle='Normalized Flux', /nodata, xthick=5, ythick=5, xstyle=9, ystyle=1, $
+           ytitle='Normalized Flux', /nodata, xthick=7, ythick=7, xstyle=9, ystyle=1, $
            yr=yrng, xr=xrng
      
      if qq GT 0 then oplot, replicate(2796.352,2), $
-                            yrng, color=clr.cyan, thick=3, linesty=2
-     oplot, xrng, [0.,0], color=clr.yellow, thick=3, linesty=1
-     oplot, wave, fx, color=clr.black, thick=5, psym=10
+                            yrng, color=clr.cyan, thick=5, linesty=2
+     oplot, xrng, [0.,0], color=clr.yellow, thick=5, linesty=1
+     oplot, wave, fx, color=clr.black, thick=7, psym=10
 
      xrng2 = (xrng/2796.352 - 1)*3e5
      axis, xaxis=1, charsiz=csz, xsty=1, xrang=xrng2, xtitl='!9d!Xv (km/s)'
