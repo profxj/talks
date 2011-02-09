@@ -1,12 +1,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-pro fig_qso_telfer
+pro fig_qsospec_esi
 
   compile_opt strictarr
 
   ;; Get structure if necessary
-  if not keyword_set( PSFILE ) then psfile = 'fig_qso_telfer.ps'
+  if not keyword_set( PSFILE ) then psfile = 'fig_qsospec_esi.ps'
   if not keyword_set( CSZ ) then csz = 2.3
   if not keyword_set( LSZ ) then lsz = 1.6
   if not keyword_set( BLSZ ) then blsz = 2.0
@@ -40,12 +40,11 @@ pro fig_qso_telfer
         ytitle='Brightness', yrange=yrng, thick=4, $
         xrange=xrng1, ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
 
-  ;; Read in Telfer
-  readcol, getenv('LLSPAP')+'/taueff/Analysis/Telfer/hst_comp01_rq.asc', $ 
-           wave, flux, format='F,F'
+  ;; Read in Data
+  fx = x_readspec('~/Keck/ESI/RedData/Q2223+20/Q2223+20_xF.fits', wav=wave)
   gd = where(wave GT xrng1[0] and wave LT xrng1[1])
 
-  oplot, wave[gd], flux[gd], color=clr.black, thick=5, psym=10
+  oplot, wave[gd], smooth(flux[gd],3), color=clr.black, thick=5, psym=10
 
   ;; Close Ps
   if keyword_set( PSFILE ) then x_psclose
