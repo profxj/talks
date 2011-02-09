@@ -1,7 +1,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-pro fig_qsospec_esi
+;; Zoom in on a piece of spectrum to visualize a Cosmic Web 'thread'
+pro fig_zoom_thread
 
   compile_opt strictarr
 
@@ -39,48 +40,45 @@ pro fig_qsospec_esi
   xmrg = [8,2]
   ymrg = [4.0,4]
   ;xrng2=xrng1*(1+zem)
-  xrng2=[4200., 6600]
+  xrng=[ [4200., 6600], $
+         [4530., 5735], $
+         [4870., 5490], $ 
+         [5000., 5300], $
+         [5030., 5180], $
+         [5030., 5180], $
+         [5125., 5200], $
+         [5154., 5173], $
+         [5161., 5167]]
+
+  sz = size(xrng, /dimen)
 
   thk = 5
 ;  yrng=[-0.02, 3.3]
   yrng=[-0.02, 2.]
 
-  for kk=0,3 do begin
+  for kk=0,sz[1]-1 do begin
 
      ;; Start plot
      plot, [0], [0], color=clr.black, background=clr.white, $
            charsize=csz,$
            xmargin=xmrg, ymargin=ymrg, xtitle='Wavelength (Angstroms)', $
            ytitle='Brightness', yrange=yrng, thick=4, $
-           xrange=xrng2, ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
+           xrange=xrng[*,kk], ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
      
      
-     if kk LT 2 then $
-        oplot, wave[gd], smooth(flux[gd],3), color=clr.black, thick=5, psym=10
-     if kk GE 1 then $
-        oplot, wave[gd], conti[gd], color=clr.red, thick=15
+     oplot, wave[gd], flux[gd], color=clr.black, thick=5, psym=10
 
-     ;; Silhouette
-     silh = (conti-(smooth(flux,3)>0.)) > 0.
-     if kk GE 3 then $
-        oplot, wave[gd], silh, color=clr.darkgray, thick=5
 
      ;; Labels
      xlbl = 5700.
-     if kk LT 2 then $
-        xyouts, xlbl, 1.7, 'Keck/ESI Spectrum', color=clr.black, charsi=lsz, align=0.
-     if kk GT 0 then $
-        xyouts, xlbl, 1.55, 'Intrinsic QSO Spectrum', color=clr.red, charsi=lsz, align=0.
-     if kk EQ 3 then $
-        xyouts, xlbl, 1.4, 'Silhouette (Cosmic Web)', color=clr.darkgray, charsi=lsz, align=0.
-
+     xyouts, xlbl, 1.7, 'Keck/ESI Spectrum', color=clr.black, charsi=lsz, align=0.
   endfor
 
   ;; Close Ps
   if keyword_set( PSFILE ) then x_psclose
   !p.multi=[0,1,1]
 
-  print, 'fig_sdss:  All done!'
+  print, 'fig_zoom_thread:  All done!'
        
   return
 end
