@@ -66,8 +66,9 @@ pro fig_1558_dh, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
   if not keyword_set( BLSZ ) then blsz = 1.4
   if not keyword_set( CSIZE ) then csize = 2.2
   if not keyword_set( CSZ2 ) then csz2 = 1.2
-  lybfil = '../Data/J1558-0031a_94.fits'
-  lybfit = '../Data/fit_lybHIRES.idl'
+  root = getenv('LLSPAP')+'/SLLS/DH/'
+  lybfil = root+'Data/J1558-0031a_94.fits'
+  lybfit = root+'Data/fit_lybHIRES.idl'
 
 ;  if not keyword_set( PSFIL ) then psfil = 'tmp.ps'
 
@@ -94,10 +95,6 @@ pro fig_1558_dh, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
 ; PLOT
 ;if nlin LE ntot then begin
 
-  fx = x_readspec(mikefil, wav=wave, NPIX=npix) 
-  vfx = replicate(1.,npix)
-  ufx = replicate(1.,npix)
-  lfx = replicate(1.,npix)
 
   if keyword_set( PSFILE ) then x_psopen, psfile, /portrait
   clr = getcolor(/load)
@@ -105,15 +102,17 @@ pro fig_1558_dh, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
 
   ;; Lyb next
   fx = x_readspec(lybfil, wav=wave, NPIX=npix, inflg=2) 
+  ufx = replicate(1.,npix)
+  lfx = replicate(1.,npix)
   vfx = replicate(1.,npix)
   x_pixminmax, wave, 1025.7223d, zhabs, -1500, 1500, PIXMIN=pmn, $
                PIXMAX=pmx, VELO=velo
 
   plot, wave[pmn:pmx], fx[pmn:pmx], xrange=[3785, 3810], /noerase, $
-        yrange=[-0.025,0.64], xtickn=xspaces, xmargin=[8,2], $
+        yrange=[-0.025,0.50], xtickn=xspaces, xmargin=[8,2], $
         ymargin=[0,0], /NODATA, ytitl='Intensity', $ ;ytickn=yspaces, $
         charsize=csz2, psym=10, background=clr.white, color=clr.black, $
-        xstyle=1, ystyle=1, thick=lthick, ytickinterval=0.1, $
+        xstyle=1, ystyle=1, thick=6, ytickinterval=0.1, $
         pos=[0.1,0.24,0.88,0.80], xtitle='Wavelength (A)'
   
   lyb = x_setline(1025.7223)
@@ -135,14 +134,16 @@ pro fig_1558_dh, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
                lfx[pmn:pmx]*conti[pmn:pmx], color=sclr
 
   ;; Data
-  oplot, wave[pmn:pmx], fx[pmn:pmx], color=clr.black, thick=1, psym=10
+  oplot, wave[pmn:pmx], fx[pmn:pmx], color=clr.black, thick=4, psym=10
 
   ;; Label
-  xyouts, 3786., 0.52, 'HI 1025', color=clr.black, charsize=LSIZE
+  xyouts, 3797., 0.32, 'HI 1025', color=clr.black, charsize=LSIZE, align=0.5
+  xyouts, 3798., 0.45, 'Keck/HIRES Spectrum', color=clr.blue, charsize=LSIZE, align=0.0
+  xyouts, 3798., 0.42, 'O''Meara et al. (2006)', color=clr.blue, charsize=LSIZE, align=0.0
 
   ;; PLOT
   oplot, [-10000., 10000.], [0.,0.], color=clr.gray, linestyle=3,thick=1
-  oplot, wave, conti, color=clr.purple, linestyle=2, thick=2
+;  oplot, wave, conti, color=clr.purple, linestyle=2, thick=2
   oplot, wave[pmn:pmx],vfx[pmn:pmx]*conti[pmn:pmx], color=clr.green, thick=2
 
   if keyword_set( PSFILE ) then x_psclose
