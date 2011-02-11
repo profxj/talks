@@ -7,7 +7,7 @@ pro fig_lyaforest
 
   ;; Get structure if necessary
   if not keyword_set( PSFILE ) then psfile = 'fig_lyaforest.ps'
-  if not keyword_set( CSZ ) then csz = 2.3
+  if not keyword_set( CSZ ) then csz = 1.8
   if not keyword_set( LSZ ) then lsz = 1.9
   if not keyword_set( BLSZ ) then blsz = 2.0
 
@@ -22,7 +22,6 @@ pro fig_lyaforest
 
   ;; Read in Data
   flux = x_readspec('~/Keck/HIRES/RedData/Q1759+75/Q1759+75T_f.fits', wav=wave)
-  gd = where(rwave GT xrng1[0] and rwave LT xrng1[1])
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; PLOT
@@ -31,23 +30,23 @@ pro fig_lyaforest
   !p.multi=[0,1,1]
   
   xmrg = [8,2]
-  ymrg = [4.0,4]
+  ymrg = [15.0,4]
 
   thk = 5
 ;  yrng=[-0.02, 3.3]
-  yrng=[-0.02, 2.]
+  yrng=[0.0, 1.2]
   
   ;; Start plot
   plot, [0], [0], color=clr.black, background=clr.white, $
         charsize=csz,$
         xmargin=xmrg, ymargin=ymrg, xtitle='Wavelength (Angstroms)', $
-        ytitle='Brightness', yrange=yrng, thick=4, $
+        ytitle='Normalized Intensity', yrange=yrng, thick=4, $
         xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
      
      
-  oplot, wave, flux, color=clr.black, thick=5, psym=10
+  oplot, wave, flux, color=clr.black, thick=3, psym=10
 
-  xyouts, 4450., 1.7, 'Keck/HIRES Spectrum', color=clr.black, charsi=lsz, align=0.
+  xyouts, 4450., 1.1, 'Keck/HIRES Spectrum', color=clr.red, charsi=lsz, align=0.
 
   ;; Close Ps
   if keyword_set( PSFILE ) then x_psclose
