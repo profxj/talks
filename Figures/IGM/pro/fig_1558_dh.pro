@@ -146,11 +146,6 @@ pro fig_1558_dh, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
 ;  oplot, wave, conti, color=clr.purple, linestyle=2, thick=2
   oplot, wave[pmn:pmx],vfx[pmn:pmx]*conti[pmn:pmx], color=clr.green, thick=2
 
-  if keyword_set( PSFILE ) then x_psclose
-  !p.multi=[0,1,1]
-
-  return
-
   ;;starting at p.multi[0], plot p.multi[1] rows and p.multi[2] columns
   ;;with p.multi[3] z dimensions and going from top to bottom (p.multi[4]
   npy = 7
