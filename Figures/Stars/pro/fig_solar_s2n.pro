@@ -56,6 +56,7 @@ pro fig_solar_s2n
 ;  yrng=[-0.02, 3.3]
   yrng=[0.0, 1.2]
   
+  ;;;;;;;;;;;;;;;;;;;;
   ;; Start plot
   plot, [0], [0], color=clr.black, background=clr.white, $
         charsize=csz,$
@@ -64,9 +65,23 @@ pro fig_solar_s2n
         xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
      
 ;  oplot, wave[*,0], flux[*,0], color=clr.black, thick=3, psym=10
-  oplot, xval, yval, color=clr.black, thick=3, psym=10
+  oplot, xval, yval, color=clr.black, thick=5, psym=10
 
-  xyouts, 4351., 1.1, 'Solar Spectrum at R=30,000, S/N=30', color=clr.red, $
+  xyouts, 4351., 1.1, 'Solar Spectrum at R=30,000; S/N=30', color=clr.red, $
+          charsi=lsz, align=0.
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ;; Start plot
+  plot, [0], [0], color=clr.black, background=clr.white, $
+        charsize=csz,$
+        xmargin=xmrg, ymargin=ymrg, xtitle='Wavelength (Angstroms)', $
+        ytitle='Normalized Intensity', yrange=yrng, thick=4, $
+        xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
+     
+  oplot, wave[*,0], flux[*,0], color=clr.black, thick=5, psym=10
+;  oplot, xval, yval, color=clr.black, thick=3, psym=10
+
+  xyouts, 4351., 1.1, 'Solar Spectrum at R=100,000; S/N=1000', color=clr.blue, $
           charsi=lsz, align=0.
 
   ;; Close Ps

@@ -20,7 +20,7 @@ pro fig_obs_sb, SHOW_INT=show_int
 
   plot, [0], [0], color=clr.black, background=clr.white, charsize=csz,$
         xmargin=xmrg, ymargin=ymrg, xtitle='Radius (kpc)', $
-        ytitle='Normalized !9m!X! (flux per kpc!u2!N)', yrange=yrng, thick=6, $
+        ytitle='Relative !9m!X! (flux per kpc!u2!N)', yrange=yrng, thick=6, $
         xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata, /noerase, /ylog
 
   for ss=0,1 do begin

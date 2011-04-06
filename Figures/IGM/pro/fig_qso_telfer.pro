@@ -36,8 +36,8 @@ pro fig_qso_telfer
   ;; Start plot
   plot, [0], [0], color=clr.black, background=clr.white, $
         charsize=csz,$
-        xmargin=xmrg, ymargin=ymrg, xtitle='Wavelength (Angstroms)', $
-        ytitle='Brightness', yrange=yrng, thick=4, $
+        xmargin=xmrg, ymargin=ymrg, xtitle='Rest Wavelength (Angstroms)', $
+        ytitle='Relative Flux', yrange=yrng, thick=4, $
         xrange=xrng1, ystyle=1, xstyle=1, psym=1, /nodata ;, /ylog
 
   ;; Read in Telfer
