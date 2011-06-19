@@ -47,7 +47,7 @@ pro fig_cos_j1016
      
   oplot, wave, flux*1e3, color=clr.black, thick=3, psym=10
 
-  xyouts, 4450., 1.1, 'J1016+4706 (HST/COS)', color=clr.red, charsi=lsz, align=0.
+  xyouts, 1550., 8.0, 'J1016+4706 (HST/COS)', color=clr.blue, charsi=lsz, align=0.
 
   ;; Close Ps
   if keyword_set( PSFILE ) then x_psclose

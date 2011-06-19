@@ -90,7 +90,7 @@ pro fig_j2233_z192, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, 
       npy = nlin
   endelse
 
-  if not keyword_set( CSIZE ) then csize = 2.5
+  if not keyword_set( CSIZE ) then csize = 2.8
 
   ;; PSFILE
   if keyword_set( PSFILE ) then x_psopen, psfile, /maxs
@@ -209,10 +209,10 @@ pro fig_j2233_z192, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, 
       oplot, [-10000., 10000.], [0.,0.], color=clr.pink, linestyle=3
       oplot, [-10000., 10000.], [1.,1.], color=clr.green, linestyle=3
   endfor 
-  xyouts, 0.04, 0.55, 'Normalized Flux', color=clr.black, $
+  xyouts, 0.03, 0.55, 'Normalized Flux', color=clr.black, $
           alignment=0.5, ORIENTATION=90., /normal, charsize=2.0 
   if not keyword_set(YPS) then begin
-      if ntot EQ 18 then yps = 0.03 else yps = 0.05
+      if ntot EQ 18 then yps = 0.03 else yps = 0.10
   endif
   xyouts, 0.57, yps, 'Relative Velocity (km/s)', color=clr.black, $
           alignment=0.5, /normal, charsize=2.0 
