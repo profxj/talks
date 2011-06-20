@@ -3,8 +3,8 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
 
   if not keyword_set(psfile) then psfile = 'fig_dndx_lya.ps'
   if not keyword_set(binsz) then binsz = 0.01
-  if not keyword_set(lsz) then lsz = 1.5 
-  if not keyword_set(csz) then csz = 2.0 
+  if not keyword_set(lsz) then lsz = 2.2 
+  if not keyword_set(csz) then csz = 2.2 
   if not keyword_set(dlim) then dlim = 5. ;arcmin
   ;; Blanton lum function
   if not keyword_set(phi_str) then phi_str = 1.49  ; 10^-2 h^3 Mpc^-3
@@ -32,7 +32,7 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
   if keyword_set(psfile) then x_psopen,psfile,/maxs
   !p.multi=[0,1,1]
   clr = getcolor(/load)
-  lclr = clr.black
+  lclr = clr.white
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; dN/dX
@@ -67,19 +67,19 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
   ;; (Penton et al. 2004)  Assumed to be z=0.05
   xv = cosm_xz([0.03, 0.08])
   dx = abs(xv[0]-xv[1])/0.05
-  xlbl3 = 2.
+  xlbl3 = 0.7
 
   ;; 300mA  [CHECK!]
-  x_curvefill, xrng, [15.0, 15.0]/dx, [9., 9.]/dx, color=clr.green, /line_fill, orient=45.
-  xyouts, xlbl3, 15./dx, 'W!uLy!9a!X!N > 300 mA', color=lclr, charsi=lsz
+  x_curvefill, xrng, [15.0, 15.0]/dx, [9., 9.]/dx, color=clr.cyan, /line_fill, orient=45.
+  xyouts, xlbl3, 15./dx, 'W!uLy!9a!X!N > 300 mA', color=clr.cyan, charsi=lsz
 
   ;; 100mA
   x_curvefill, xrng, [70.0, 70.0]/dx, [50., 50.]/dx, color=clr.orange, /line_fill, orient=45.
-  xyouts, xlbl3, 70./dx, 'W!uLy!9a!X!N > 100 mA', color=lclr, charsi=lsz
+  xyouts, xlbl3, 70./dx, 'W!uLy!9a!X!N > 100 mA', color=clr.orange, charsi=lsz
 
   ;; 30mA
-  x_curvefill, xrng, [180.0, 180.0]/dx, [160., 160.]/dx, color=clr.red, /line_fill, orient=45.
-  xyouts, xlbl3, 180./dx, 'W!uLy!9a!X!N > 30 mA', color=lclr, charsi=lsz
+  x_curvefill, xrng, [180.0, 180.0]/dx, [160., 160.]/dx, color=clr.tomato, /line_fill, orient=45.
+  xyouts, xlbl3, 180./dx, 'W!uLy!9a!X!N > 30 mA', color=clr.tomato, charsi=lsz
 
   ;;;;;;;;;;;;;;;
   ;;  r_p = r_vir
@@ -104,7 +104,7 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
   dndx_rcgm = dndx_const * phi_str_cgs * (!pi * rcgm_0^2) * $
               gamma(x) * ( igamma(x,xrng[1]) - igamma(x,Lval))
 
-  oplot, Lval, dndx_rcgm, color=clr.blue, linesty=1
+  oplot, Lval, dndx_rcgm, color=clr.yellow
 
 ;  x1 = alpha + 1 
 ;  dndx_subls1 = dndx_const * phi_str_cgs * (!pi * (100.*c.kpc)^2) * $
@@ -115,11 +115,11 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
 
   xlbl2 = [0.02, 0.03]
   ylbl2 = 0.3
-  oplot, xlbl2, replicate(ylbl2,2), color=clr.blue, linest=1
+  oplot, xlbl2, replicate(ylbl2,2), color=clr.yellow
   xyouts, xlbl2[1]*1.3, ylbl2*0.9, 'A!dp!N = !9p!X r!S!dCGM!R!N!u2!N', $
-          color=clr.blue, charsiz=lsz
+          color=clr.yellow, charsiz=lsz
 
-  ylbl2 = ylbl2/1.5
+  ylbl2 = ylbl2/1.8
   oplot, xlbl2, replicate(ylbl2,2), color=lclr
   xyouts, xlbl2[1]*1.3, ylbl2*0.9, 'A!dp!N = !9p!X r!S!dvir!R!N!u2!N', $
           color=lclr, charsiz=lsz
