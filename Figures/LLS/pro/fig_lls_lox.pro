@@ -49,8 +49,8 @@ pro fig_lls_lox, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, $
   !p.multi=[0,1,1]
   
   xtit = 'z' 
-  yrng = [0.0, 1.2]
-  xrng = [3.2, 6.0]
+  yrng = [0.0, 2.5]
+  xrng = [3.2, 6.1]
   for qq=0,1 do begin
           
      Sscl = 1.1
@@ -94,9 +94,25 @@ pro fig_lls_lox, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, $
 
      ;; Label
      xyouts, 5.0, 0.1, 'SDSS-DR7: POW10', color=lclr, charsi=lsz, align=0.
-     if qq EQ 1 then begin
+     if qq EQ 1 then begin ;; Songaila
         print, 'Show SC06!!'
-        xyouts, 5.0, 0.2, 'Keck/ESI: SC11', color=clr.cyan, charsi=lsz, align=0.
+        z_dndz = [ [4.2, 5.], $
+                   [5., 6.] ]
+        mz_dndz = [4.4, 5.7]
+        dndz = [4.04, 8.91]
+        sig_dndz = [0.7, 3.5]
+        for jj=0,1 do begin
+           dxdz = (cosm_xz(mz_dndz[jj]+0.05, /w05map) - $
+                  cosm_xz(mz_dndz[jj]-0.05, /w05map))  / 0.1
+           oploterror, [mz_dndz[jj]],  [dndz[jj]]/dxdz, $
+                       [mz_dndz[jj]]-z_dndz[0,jj], sig_dndz[jj]/dxdz, $
+                       psym=1, color=clr.cyan, errcolor=clr.cyan, /lobar
+           oploterror, [mz_dndz[jj]],  [dndz[jj]]/dxdz, $
+                       z_dndz[1,jj]-[mz_dndz[jj]], sig_dndz[jj]/dxdz, $
+                       psym=1, color=clr.cyan, errcolor=clr.cyan, /hibar
+;           if jj EQ 1 then stop
+        endfor
+        xyouts, 5.0, 0.3, 'Keck/ESI: SC11', color=clr.cyan, charsi=lsz, align=0.
      endif
 
   endfor
