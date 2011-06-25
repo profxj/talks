@@ -188,8 +188,8 @@ pro fig_j1134_z341, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, 
           0: xyouts, 0.05*(vmnx[1]-vmnx[0])+vmnx[0], $
             ymnx[0]+ (ymnx[1]-ymnx[0])*0.10, $
             strtrim(nam,2), color=clr.black, charsize=LSIZE
-          1: xyouts, 0.2*(vmnx[1]-vmnx[0])+vmnx[0], $
-            ymnx[0]+ (ymnx[1]-ymnx[0])*0.68, $
+          1: xyouts, 0.55*(vmnx[1]-vmnx[0])+vmnx[0], $
+            ymnx[0]+ (ymnx[1]-ymnx[0])*0.58, $
             strtrim(nam,2), color=clr.black, charsize=LSIZE
           2: xyouts, 0.05*(vmnx[1]-vmnx[0])+vmnx[0], $
             ymnx[0]+ (ymnx[1]-ymnx[0])*0.31, $
@@ -206,6 +206,7 @@ pro fig_j1134_z341, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, 
       
       ;; Lines
       oplot, [0., 0.], ymnx, color=clr.cyan, linestyle=2
+;      if ii EQ 0 then oplot, [-82., -82.], ymnx, color=clr.red, linestyle=3
       oplot, [-10000., 10000.], [0.,0.], color=clr.pink, linestyle=3
       oplot, [-10000., 10000.], [1.,1.], color=clr.green, linestyle=3
   endfor 
@@ -214,7 +215,7 @@ pro fig_j1134_z341, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, 
   if not keyword_set(YPS) then begin
       if ntot EQ 18 then yps = 0.03 else yps = 0.10
   endif
-  xyouts, 0.08, 0.92, 'J1XXX+XXXX z=3.XX', color=clr.black, $
+  xyouts, 0.10, 0.96, 'J1XXX+XXXX z=3.XX', color=clr.black, $
           alignment=0.0, /normal, charsize=2.0 
 
   xyouts, 0.57, yps, 'Relative Velocity (km/s)', color=clr.black, $
