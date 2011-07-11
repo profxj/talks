@@ -1,7 +1,8 @@
-pro fig_z0fnall, infil, PSFILE=psfile
+pro fig_z0fnall, infil, PSFILE=psfile, WIDE=wide
 
   ;; Get structure if necessary
   if not keyword_set( PSFILE ) then psfile = 'fig_z0fnall.ps'
+  if keyword_set(WIDE) then psfile = 'fig_z0fnall_wide.ps'
   if not keyword_set( DATFIL ) then datfil = 'fig_fnall.dat'
 
   if not keyword_set( NMIN ) then nmin = 12.0
@@ -10,16 +11,16 @@ pro fig_z0fnall, infil, PSFILE=psfile
   x_psopen, psfile, /maxs
   !p.multi=[0,1,1,0,0]
   clr = getcolor(/load)
+  lclr = clr.white
 
-  cc = clr.black
   lbl = 'Comb: N!dmin!N='+string(nmin,format='(f4.1)')
   XTIT='log N!dHI!N'
 
-  yrng = [-31.,-9]
+  yrng = [-30.,-9]
   xrng = [nmin, nmax]
+  if not keyword_set(WIDE) then ymrg = [3.5,0.5] else ymrg = [6.5, 5]
   csz = 2.2
-  ymrg = [3.5,0.5]
-  plot, [0], [0], color=clr.black, $
+  plot, [0], [0], color=lclr, $
     background=clr.white, charsize=csz,$
     xmargin=[8,1.2], ymargin=ymrg, xtitle=XTIT, $
     ytitle='log f(N!dHI!N, X)', yrange=yrng, thick=4, $
@@ -43,7 +44,7 @@ pro fig_z0fnall, infil, PSFILE=psfile
   lya = where(HI_clm LT 14.5)
   oploterror, HI_clm[lya], fN[lya], $;sigHI[lya], $
               sigfN[lya], $
-              color=clr.red, errcolor=clr.red, thick=6, psym=3
+              color=clr.cyan, errcolor=clr.cyan, thick=6, psym=3
 
   ;; Penton (14.5-17.5)
   beta = -1.33
@@ -57,10 +58,13 @@ pro fig_z0fnall, infil, PSFILE=psfile
 
   high = where(HI_clm GT 14.5)
   oploterror, HI_clm[high], fN[high], sigHI[high], sigfN[high], $
-              color=clr.red, errcolor=clr.red, thick=6, psym=3, errstyle=1
+              color=clr.cyan, errcolor=clr.cyan, thick=6, psym=3, errstyle=1
 
   lsz = 2.
-  xyouts, 14.5, -12., 'Ly!9a!X Forest', color=clr.red, charsize=lsz
+  xyouts, 14.5, -12., 'Ly!9a!X Forest', color=clr.cyan, charsize=lsz
+
+  ;; LLS
+  xyouts, 18.5, -18., 'LLS', color=clr.orange, charsize=lsz, align=0.5
 
   ;; DLA (Zwaan et al. 2005)
   
@@ -68,9 +72,9 @@ pro fig_z0fnall, infil, PSFILE=psfile
            HI_clm, fN, sigfN
   gd = where(HI_clm GT 19.8 and HI_clm LE 22., ngd)
   oploterror, HI_clm[gd], fn[gd], $;replicate(0.05, ngd), $
-              sigfn[gd], color=clr.blue, errcolor=clr.blue, thick=6, $
+              sigfn[gd], color=clr.yellow, errcolor=clr.yellow, thick=6, $
               psym=3
-  xyouts, 20.5, -20., '21cm', color=clr.blue, charsize=lsz
+  xyouts, 20.0, -20.5, 'DLA (21cm)', color=clr.yellow, charsize=lsz
 
   ;; H2
   nplt = 100L
@@ -85,6 +89,9 @@ pro fig_z0fnall, infil, PSFILE=psfile
 ;  printcol, HI_clm, alog10(fN)
   
   
+  xyouts, 12.5, -25.5, 'Penton+04', color=lclr, charsize=lsz, align=0
+  xyouts, 12.5, -27., 'Lehner+07', color=lclr, charsize=lsz, align=0
+  xyouts, 12.5, -28.5, 'Zwaan+05', color=lclr, charsize=lsz, align=0
 
 
   ;; Close Ps
