@@ -40,27 +40,30 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
   xrng = [0.001, 10] 
   xmrg = [8,1.0]
   ylbl = -1
+
+  for qq=0,3 do begin
   
 ;  xspaces = replicate(' ',30) 
-  plot,[0.],[0.],xrange=xrng,yrange=yrng,color=lclr,$
-       background=clr.white, charsize=csz, $
-       xmargin=xmrg, ymargin=[4.5,2],xtitle='Luminosity (!8L*!X)', $
-       ytitle='',/nodata,xstyle=1,ystyle=1, /xlog, /ylog, $ ;, xtickn=xspaces
-       xtickformat='x_logticks'
-
-  xlbl = 0.05
-  xyouts, 0.05, 0.35, 'Cumulative', alignment=0.0, color=lclr,$
-    charsize=2.3, /normal, orientation=90
-  !p.font = -1
-  xyouts, xlbl, 0.6, '!12l!X', alignment=0.0, color=lclr,$
-    charsize=2.8, /normal, orientation=90
-  !p.font = 0
-  xyouts, xlbl, 0.61, '!dLy!9a!X!N(X)', alignment=0.0, color=lclr,$
-    charsize=2.4, /normal, orientation=90
-
-  ;; Shade out faint-end
-  x_curvefill, [0.001, 0.01], replicate(yrng[1],2), replicate(yrng[0],2), $
-               color=clr.gray, /line_fill, orient=135.
+     plot,[0.],[0.],xrange=xrng,yrange=yrng,color=lclr,$
+          background=clr.white, charsize=csz, $
+          xmargin=xmrg, ymargin=[4.5,2],xtitle='Luminosity (!8L*!X)', $
+          ytitle='',/nodata,xstyle=1,ystyle=1, /xlog, /ylog, $ ;, xtickn=xspaces
+          xtickformat='x_logticks'
+     
+     xlbl = 0.05
+     xyouts, 0.05, 0.35, 'Cumulative', alignment=0.0, color=lclr,$
+             charsize=2.3, /normal, orientation=90
+     !p.font = -1
+     xyouts, xlbl, 0.6, '!12l!X', alignment=0.0, color=lclr,$
+             charsize=2.8, /normal, orientation=90
+     !p.font = 0
+     xyouts, xlbl, 0.61, '!dLy!9a!X!N(X)', alignment=0.0, color=lclr,$
+             charsize=2.4, /normal, orientation=90
+     
+     ;; Shade out faint-end
+     if qq GT 1 then $
+        x_curvefill, [0.001, 0.01], replicate(yrng[1],2), replicate(yrng[0],2), $
+                     color=clr.gray, /line_fill, orient=135.
   
  
   ;; Observations
@@ -69,42 +72,59 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
   dx = abs(xv[0]-xv[1])/0.05
   xlbl3 = 0.7
 
-  ;; 300mA  [CHECK!]
-  x_curvefill, xrng, [15.0, 15.0]/dx, [9., 9.]/dx, color=clr.cyan, /line_fill, orient=45.
-  xyouts, xlbl3, 15./dx, 'W!uLy!9a!X!N > 300 mA', color=clr.cyan, charsi=lsz
-
-  ;; 100mA
-  x_curvefill, xrng, [70.0, 70.0]/dx, [50., 50.]/dx, color=clr.orange, /line_fill, orient=45.
-  xyouts, xlbl3, 70./dx, 'W!uLy!9a!X!N > 100 mA', color=clr.orange, charsi=lsz
-
-  ;; 30mA
-  x_curvefill, xrng, [180.0, 180.0]/dx, [160., 160.]/dx, color=clr.tomato, /line_fill, orient=45.
-  xyouts, xlbl3, 180./dx, 'W!uLy!9a!X!N > 30 mA', color=clr.tomato, charsi=lsz
+  if qq GT 0 then begin
+     ;; 300mA  [CHECK!]
+     x_curvefill, xrng, [15.0, 15.0]/dx, [9., 9.]/dx, color=clr.cyan, /line_fill, orient=45.
+     xyouts, xlbl3, 15./dx, 'W!uLy!9a!X!N > 300 mA', color=clr.cyan, charsi=lsz
+     
+     ;; 100mA
+     x_curvefill, xrng, [70.0, 70.0]/dx, [50., 50.]/dx, color=clr.orange, /line_fill, orient=45.
+     xyouts, xlbl3, 70./dx, 'W!uLy!9a!X!N > 100 mA', color=clr.orange, charsi=lsz
+     
+     ;; 30mA
+     x_curvefill, xrng, [180.0, 180.0]/dx, [160., 160.]/dx, color=clr.tomato, /line_fill, orient=45.
+     xyouts, xlbl3, 180./dx, 'W!uLy!9a!X!N > 30 mA', color=clr.tomato, charsi=lsz
+  endif
 
   ;;;;;;;;;;;;;;;
   ;;  r_p = r_vir
   ;;  r_vir = 250 kpc * (L/L*)^beta   ;; Using beta = 0.2
 
-  Lval = xrng[0] * 10.^(alog10(xrng[1]/xrng[0]) * findgen(101)/100.)
-  rvir_0 = init.rvir[2] * c.kpc ; kpc
-  beta = init.beta
-  x = alpha + 1 + beta
-  dndx_rvir = dndx_const * phi_str_cgs * (!pi * rvir_0^2) * $
-              gamma(x) * ( igamma(x,xrng[1]) - igamma(x,Lval))
-
-  oplot, Lval, dndx_rvir, color=lclr
+  xlbl2 = [0.02, 0.03]
+  if qq GE 2 then begin
+     Lval = xrng[0] * 10.^(alog10(xrng[1]/xrng[0]) * findgen(101)/100.)
+     rvir_0 = init.rvir[2] * c.kpc ; kpc
+     beta = init.beta
+     x = alpha + 1 + beta
+     dndx_rvir = dndx_const * phi_str_cgs * (!pi * rvir_0^2) * $
+                 gamma(x) * ( igamma(x,xrng[1]) - igamma(x,Lval))
+     
+     oplot, Lval, dndx_rvir, color=lclr
+     ylbl2 = 0.3/1.8
+     oplot, xlbl2, replicate(ylbl2,2), color=lclr
+     xyouts, xlbl2[1]*1.3, ylbl2*0.9, 'A!dp!N = !9p!X r!S!dvir!R!N!u2!N', $
+             color=lclr, charsiz=lsz
+  endif
 
   ;;;;;;;;;;;;;;;
   ;;  r_p = r_cgm
   ;;  r_cgm = 300 kpc 
 
-  rcgm_0 = init.rcgm * c.kpc ; kpc
-  beta = 0.
-  x = alpha + 1 + beta
-  dndx_rcgm = dndx_const * phi_str_cgs * (!pi * rcgm_0^2) * $
-              gamma(x) * ( igamma(x,xrng[1]) - igamma(x,Lval))
+  if qq GE 3 then begin
+     rcgm_0 = init.rcgm * c.kpc ; kpc
+     beta = 0.
+     x = alpha + 1 + beta
+     dndx_rcgm = dndx_const * phi_str_cgs * (!pi * rcgm_0^2) * $
+                 gamma(x) * ( igamma(x,xrng[1]) - igamma(x,Lval))
+     
+     oplot, Lval, dndx_rcgm, color=clr.yellow
 
-  oplot, Lval, dndx_rcgm, color=clr.yellow
+     ylbl2 = 0.3
+     oplot, xlbl2, replicate(ylbl2,2), color=clr.yellow
+     xyouts, xlbl2[1]*1.3, ylbl2*0.9, 'A!dp!N = !9p!X r!S!dCGM!R!N!u2!N', $
+             color=clr.yellow, charsiz=lsz
+
+  endif
 
 ;  x1 = alpha + 1 
 ;  dndx_subls1 = dndx_const * phi_str_cgs * (!pi * (100.*c.kpc)^2) * $
@@ -113,16 +133,8 @@ pro fig_dndx_lya, summ_fil, ALL_GAL=all_gal
 ;              gamma(x) * ( igamma(x,1.) - igamma(x,0.1))
 ;  print, 'SubL*', dndx_subls1, dndx_subls2
 
-  xlbl2 = [0.02, 0.03]
-  ylbl2 = 0.3
-  oplot, xlbl2, replicate(ylbl2,2), color=clr.yellow
-  xyouts, xlbl2[1]*1.3, ylbl2*0.9, 'A!dp!N = !9p!X r!S!dCGM!R!N!u2!N', $
-          color=clr.yellow, charsiz=lsz
+endfor
 
-  ylbl2 = ylbl2/1.8
-  oplot, xlbl2, replicate(ylbl2,2), color=lclr
-  xyouts, xlbl2[1]*1.3, ylbl2*0.9, 'A!dp!N = !9p!X r!S!dvir!R!N!u2!N', $
-          color=lclr, charsiz=lsz
               
   x_psclose
   !p.multi=[0,1,1]

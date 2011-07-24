@@ -20,7 +20,7 @@ pro fig_igm_galxy, infil, PSFILE=psfile
   if not keyword_set(WIDE) then ymrg = [3.5,3.5] else ymrg = [6.5, 5]
   csz = 2.2
 
-  for qq=0,3 do begin
+  for qq=0,4 do begin
      plot, [0], [0], color=lclr, $
            background=clr.white, charsize=csz,$
            xmargin=[8,1.2], ymargin=ymrg, xtitle=XTIT, $
@@ -64,7 +64,7 @@ pro fig_igm_galxy, infil, PSFILE=psfile
      lsz = 2.
      xyouts, 12.3, -14.5, 'Ly!9a!X Forest', color=clr.cyan, charsize=lsz
 
-     if qq GT 0 then begin
+     if qq GT 0 and qq LT 4 then begin
         oplot, replicate(14.5,2), yrng, color=lclr, linesty=2
         xyouts, 13.3, -28., 'IGM', color=clr.cyan, charsiz=lsz, align=0.5
      endif
@@ -72,13 +72,12 @@ pro fig_igm_galxy, infil, PSFILE=psfile
      ;; LLS
      xyouts, 18.5, -18., 'LLS', color=clr.orange, charsize=lsz, align=0.5
 
-     if qq GT 1 then begin
+     if qq GT 1 and qq Lt 4 then begin
         oplot, replicate(19.8,2), yrng, color=lclr, linesty=2
         xyouts, 17.15, -28., 'CGM', color=clr.orange, charsiz=lsz, align=0.5
      endif
      
      ;; DLA (Zwaan et al. 2005)
-     
      readcol, getenv('PSDSS')+'/DR3/Figures/Data/zwaan_fn.dat', $
               HI_clm, fN, sigfN, /sile
      gd = where(HI_clm GT 19.8 and HI_clm LE 22., ngd)
@@ -88,6 +87,7 @@ pro fig_igm_galxy, infil, PSFILE=psfile
      xyouts, 20.0, -20.5, 'DLA (21cm)', color=clr.yellow, charsize=lsz
      
      if qq GT 2 then begin
+        oplot, replicate(19.8,2), yrng, color=lclr, linesty=2
         xyouts, 21.0, -28., 'ISM', color=clr.yellow, charsiz=lsz, align=0.5
      endif
   

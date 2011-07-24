@@ -1,16 +1,18 @@
 pro fig_lya_lines
 
-  if not keyword_set(CSZ) then csz = 2.5
-  if not keyword_set(lSZ) then lsz = 2.5
+  if not keyword_set(CSZ) then csz = 3.0
+  if not keyword_set(lSZ) then lsz = 3.0
 
-  npix = 200
-  wave = 1210. + 0.05 * findgen(npix)
-  ncloud = [0.3, 10, 1e6]
+  npix = 800
+  wave = 1205. + 0.05 * findgen(npix)
+  ncloud = [0.3, 3e3, 1e7]
+  lbls = ['Ly!9a!X Forest', 'LLS', 'DLA']
 
   ;; Emission Plot
   x_psopen, 'fig_lya_lines.ps', /maxs
   !p.multi = [0,1,1]
   clr = getcolor(/load)
+  lclr = clr.white
 
 
   xmrg = [7,1]
@@ -32,19 +34,27 @@ pro fig_lya_lines
         lya.N = N1 + alog10(ncloud[qq])
         fx = x_voigt(wave, lya, FWHM=3)
      endif
+     if qq LT 2 then begin
+        xlbl = 1213.1 
+        ylbl = 0.26
+     endif else begin
+        xlbl = 1213.1
+        ylbl = 0.8
+        xrng=1215.67 + [-1,1]*9.7
+     endelse
 
      ;; Plot
-     plot, [0], [0], color=clr.white, background=clr.black, charsize=csz,$
+     plot, [0], [0], color=lclr, background=clr.black, charsize=csz,$
            xmargin=xmrg, ymargin=ymrg, ytitle=ytit, $
-           xtitle=xtit, yrange=yrng, thick=7, ytickinter=1.0, $
-           xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata, $
-           xtickint=1.
+           xtitle=xtit, yrange=yrng, thick=9, ytickinter=1.0, $
+           xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata;, $
+;           xtickint=1.
 
-     oplot, wave, fx, color=clr.white, thick=9, psym=10
+     oplot, wave, fx, color=lclr, thick=9, psym=10
 
-     xyouts, 1213.3, 0.32, 'Hydrogen', color=clr.tomato, charsi=lsz
-     xyouts, 1213.3, 0.19, 'Lyman-!9a!X', color=clr.orange, charsi=lsz
-     xyouts, 1213.3, 0.06, 'N!dHI!N = 10!u'+string(lya.N,format='(f4.1)')+'!N cm!u-2!N', $
+     xyouts, xlbl, ylbl, lbls[qq], color=lclr, charsi=lsz
+     xyouts, xlbl, ylbl-0.1, 'HI Ly!9a!X', color=clr.tomato, charsi=lsz
+     xyouts, xlbl, ylbl-0.2, 'N!dHI!N = 10!u'+string(lya.N,format='(f4.1)')+'!N cm!u-2!N', $
              color=clr.orange, charsi=lsz
 
 ;     if ncloud[ii] LE 10 then cstr = strtrim(round(ncloud[ii]),2) $
