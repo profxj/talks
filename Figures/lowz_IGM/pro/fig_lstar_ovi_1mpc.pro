@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-pro fig_lstar_ovi_1mpc, summ_fil, STRUCT=struct, PSFILE=psfile, NOPS=nops
+pro fig_lstar_ovi_1mpc, summ_fil, STRUCT=struct, PSFILE=psfile, NEAR=near, NOPS=nops
 
   if not keyword_set(psfile) then psfile = 'fig_lstar_1mpc_ovi.ps'
   if not keyword_set(binsz) then binsz = 0.01
@@ -20,9 +20,10 @@ pro fig_lstar_ovi_1mpc, summ_fil, STRUCT=struct, PSFILE=psfile, NOPS=nops
   if keyword_set(psfile) then x_psopen,psfile,/maxs
   !p.multi=[0,1,1]
   clr = getcolor(/load)
-  nclr = clr.gray
+  nclr = clr.green
   pclr = clr.tomato
   lclr = clr.white
+;  lclr = clr.black
   ppsym = 4
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -70,22 +71,22 @@ pro fig_lstar_ovi_1mpc, summ_fil, STRUCT=struct, PSFILE=psfile, NOPS=nops
         idx = dwarfs[ii]
         dv = x_relvel(struct[idx].z, all_gal.z, /rev)
         ;; Sub-L*
-        mtch = where(all_gal.dra LT RHO_GAL AND $
+        mtch = where(all_gal.dra LT struct[idx].dra AND $
                      strmatch(strtrim(all_gal.field,2),strtrim(struct[idx].field,2)) AND $
                      (all_gal.ddec GT 0.1 AND all_gal.ddec LT 1.) AND $
                      abs(dv) LT 300., nmtch)
         if nmtch GT 0 then begin
-           plotsym, 8, 1.3, thick=4
+           plotsym, 8, 1.7, thick=4
            oplot, [struct[idx].dra], [struct[idx].magerr[4]], color=nclr, psym=8
            struct[idx].area = -1
         endif
         ;; Dwarfs
-        mtch = where(all_gal.dra LT RHO_GAL AND $
+        mtch = where(all_gal.dra LT struct[idx].dra AND $
                      strmatch(strtrim(all_gal.field,2),strtrim(struct[idx].field,2)) AND $
                      all_gal.ddec LT 0.1  AND $
                      abs(dv) LT 300., nmtch)
         if nmtch GT 0 then begin
-           plotsym, 4, 1.3, thick=4
+           plotsym, 4, 1.7, thick=4
            oplot, [struct[idx].dra], [struct[idx].magerr[4]], color=nclr, psym=8
            struct[idx].area = -1
         endif

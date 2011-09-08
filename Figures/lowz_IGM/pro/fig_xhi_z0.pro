@@ -55,8 +55,9 @@ pro fig_xhi_z0
           align=0.5, orient=90, /norma
 
   ;; Top axis
-  rhob = c.rhoc * (0.72)^2 * 0.04  ;; Mass density in baryons g/cm^3
-  nH_b = rhob / (c.mp*1.3)  ;; H per cm^3
+;  rhob = c.rhoc * (0.72)^2 * 0.04  ;; Mass density in baryons g/cm^3
+;  nH_b = rhob / (c.mp*1.3)  ;; H per cm^3
+  nH_b = c.nhb
 
   xrho = xrng / nH_b
   axis, xaxis=1, color=lclr, /xlog, charsi=csz, xrang=xrho, xsty=1
