@@ -21,7 +21,7 @@ pro fig_xhi_z0
   x_psopen, psfile, /maxs
   !p.multi=[0,1,1]
   clr = getcolor(/load)
-  lclr = clr.white
+  lclr = clr.black
   
   xtit = 'n!dH!N (cm!u-3!N)'
   ytit = 'x!dHI!N'

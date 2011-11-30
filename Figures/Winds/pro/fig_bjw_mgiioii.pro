@@ -96,6 +96,7 @@ pro fig_bjw_mgiioii, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint,
   !p.multi=[npx*(npy+1),npx,npy+1,0,1]
   clr = getcolor(/load)
   lclr = clr.white
+;  lclr = clr.black
 
   ;; Vel strct
   wrest = 0.d
