@@ -60,6 +60,13 @@ pro cgm_baryfrac, summ_fil, ALL_GAL=all_gal
      oplot, L_val, M_cgm, color=cgm_clr[ii], linesty=3
   endfor
 
+  ;; Label
+  xlbl = 0.7
+  xyouts, xlbl, 1e9, 'DM Halo', color=lclr, charsiz=lsz
+  xyouts, xlbl, 1e9/2., 'N!dH!N = 10!u20!N cm!u-2!N', color=clr.blue, charsiz=lsz
+  xyouts, xlbl, 1e9/4., 'N!dH!N = 10!u19!N cm!u-2!N', color=clr.red, charsiz=lsz
+
+
   x_psclose
   !p.multi=[0,1,1]
 

@@ -1,6 +1,6 @@
 pro fig_080607_h2, conti, J0_NH2=J0_NH2, J1_NH2=J1_NH2, AV=AV, $
             NOSMC=nosmc, NOPS=nops, SUB=sub, NOFIT=nofit, $
-            NOERR=noerr, NOLY=noly, REVIEW=review
+            NOERR=noerr, NOLY=noly, REVIEW=review, NOLBL=nolbl
 
   ;; Get structure if necessary
   if not keyword_set( CSZ ) then csz = 1.4
@@ -16,7 +16,7 @@ pro fig_080607_h2, conti, J0_NH2=J0_NH2, J1_NH2=J1_NH2, AV=AV, $
 
   b600 = '~/GRB/data/080607/LRIS/GRB080607_B600X.fits'
   lyafit = '~/GRB/data/080607/LRIS/GRB080607_lya.idl'
-  restore, lyafit
+  restore, lyafit, /relaxed
   lyalines = lines
 
   model = { $
