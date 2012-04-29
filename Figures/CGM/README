@@ -1,3 +1,14 @@
 This will contain much of the COS-Halos stuff
 that I have generated.  Unless it is mixed with
 the LCO data
+
+N_HI values:
+
+The official CT/JT HI results are here:
+
+~COS-Halos/Analysis/HI/HI_results and HI_results.fits 
+
+code illustratiing its use is widespread in 
+~COS-Halos/Analysis/HI/plots 
+
+halos_lya_rho.pro 
