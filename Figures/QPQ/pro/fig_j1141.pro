@@ -71,7 +71,7 @@ pro fig_j1141, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
   if not keyword_set( NTOT ) then ntot = 16L
   if not keyword_set( LSIZE ) then lsize = 1.2
   if not keyword_set( LTHICK ) then lthick = 4.
-  if not keyword_set( PTHICK ) then pthick = 2.
+  if not keyword_set( PTHICK ) then pthick = 4.
   if not keyword_set( INFIL ) then infil = 'Input/fig_j1141.inp'
   if not keyword_set( BLSZ ) then blsz = 1.7
   if not keyword_set( CSIZE ) then csize = 2.5
@@ -160,7 +160,7 @@ pro fig_j1141, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
      
      ;; BLENDS
      nlow = pmn
-     if keyword_set(TALK) then bclr = clr.red else bclr = clr.orange
+     bclr = clr.red 
      for jj=0L,nblnd-1 do begin
         readf, 11, vmin, vmax, FORMAT='(f,f)'
         mn = min(abs(velo-vmin),pixmin)
