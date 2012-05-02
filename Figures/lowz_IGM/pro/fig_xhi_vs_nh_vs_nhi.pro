@@ -49,7 +49,7 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
      xHI = 10.d^scldy.X[1,1]
      oplot, nH, xHI, color=NHI_clr[ss]
      ;; Label
-     xyouts, 1e-2, 5e-6*(1.5^ss), 'N!dHI!N = 10!u'+strtrim(round(NHI_val[ss]),2)+'!N cm!u-2!N', $
+     xyouts, 7e-3, 5e-6*(1.5^ss), 'N!dHI!N = 10!u'+strtrim(round(NHI_val[ss]),2)+'!N cm!u-2!N', $
              color=NHI_clr[ss], charsi=lsz
   endfor
 
@@ -76,7 +76,7 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
   nH_b = c.nhb
 
   xrho = xrng / nH_b
-  axis, xaxis=1, color=lclr, /xlog, charsi=csz, xrang=xrho, xsty=1
+  axis, xaxis=1, color=fclr, /xlog, charsi=csz, xrang=xrho, xsty=1
 
 
 
