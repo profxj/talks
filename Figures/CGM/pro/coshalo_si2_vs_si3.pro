@@ -1,5 +1,5 @@
 
-pro coshalo_si3_vs_rho, ionz, ioni, galprop, psfile = psfile, white = white,  anyion = anyion, eqw = eqw, xion = xion, ionratio = ionratio, XPS=xps, MEGASTRUCT=megastruct
+pro coshalo_si2_vs_si3, ionz, ioni, galprop, psfile = psfile, white = white,  anyion = anyion, eqw = eqw, xion = xion, ionratio = ionratio, XPS=xps, MEGASTRUCT=megastruct
 
 ;;;;; Program to plot any column density or ratio of column densities
 ;;;;; vs. any galaxy property using the megastructures. 
@@ -60,65 +60,18 @@ pro coshalo_si3_vs_rho, ionz, ioni, galprop, psfile = psfile, white = white,  an
 ;;;;;                 xaxis.
 
 
- psfile = 'coshalo_si3_vs_rho.ps'
  ionz = 14
- ioni = 3
- galprop = 'rhokpc'
+ ioni = 2
+ galprop = 'nion'
+ xion = [14,3]
  xps = 1
 
 
 
 ;;;;;;; SET PLOT NAME ;;;;;;;;
+ psfile = 'coshalo_si2_vs_si3.ps'
+
 ;;;;;;; THE DEFAULTS SHOULD BE SENSIBLE ;;;;;
-
-
-if (~keyword_set(psfile) AND ~keyword_set(ionratio)) then psfile = 'halos_'+strtrim(string(ionz, format = '(i2)'), 2)+$
-                                      '_'+strtrim(string(ioni, format = '(i1)'), 2)+'_vs_'+$
-                                      strtrim(string(galprop, format = '(a8)'), 2)+'.eps'
-if (keyword_set(ionratio) AND ~keyword_set(psfile)) then psfile = 'halos_'+$
-   strtrim(string(ionz, format = '(i2)'), 2)+$
-   '_'+strtrim(string(ioni, format = '(i1)'), 2)+$
-   '-'+strtrim(string(ionratio[0], format = '(i2)'), 2)+$
-   '_'+strtrim(string(ionratio[1], format = '(i1)'), 2)+$ $
-   '_vs_'+strtrim(string(galprop, format = '(a8)'), 2)+'.eps'
-
-if (~keyword_set(ionratio) AND ~keyword_set(xion) AND keyword_set(eqw)) then begin
-   psfile = 'halos_'+strtrim(string(ionz, format = '(i2)'), 2)+$
-  '_'+strtrim(string(ioni, format = '(i1)'), 2)+'EW'+'_vs_'+$
-   strtrim(string(galprop, format = '(a8)'), 2)+'.eps'
-endif
-
-
-if (~keyword_set(ionratio) AND keyword_set(xion)) then psfile = 'halos_'+strtrim(string(ionz, format = '(i2)'), 2)+$
-  '_'+strtrim(string(ioni, format = '(i1)'), 2)+'_vs_'+$
-   strtrim(string(galprop, format = '(a8)'), 2)+'_'+$
-   strtrim(string(xion[0], format = '(i2)'), 2)+'_'+$
-   strtrim(string(xion[1], format = '(i2)'), 2)+'.eps'
-
-if (keyword_set(ionratio) AND keyword_set(xion)) then psfile = 'halos_'+$
-   strtrim(string(ionz, format = '(i2)'), 2)+$
-   '_'+strtrim(string(ioni, format = '(i1)'), 2)+$
-   '-'+strtrim(string(ionratio[0], format = '(i2)'), 2)+$
-   '_'+strtrim(string(ionratio[1], format = '(i1)'), 2)+$ 
-   '_vs_'+strtrim(string(galprop, format = '(a8)'), 2)+'_'+$
-   strtrim(string(xion[0], format = '(i2)'), 2)+'_'+$
-   strtrim(string(xion[1], format = '(i2)'), 2)+'.eps'
-
-if ( ~keyword_set(ionratio) AND keyword_set(xion) AND keyword_set(eqw)) then psfile = 'halos_'+strtrim(string(ionz, format = '(i2)'), 2)+$
-  '_'+strtrim(string(ioni, format = '(i1)'), 2)+'EW'+'_vs_'+$
-   strtrim(string(galprop, format = '(a8)'), 2)+'_'+$
-   strtrim(string(xion[0], format = '(i2)'), 2)+'_'+$
-   strtrim(string(xion[1], format = '(i2)'), 2)+'.eps'
-
-
-
-if keyword_set(anyion) then begin
-   strput, psfile, '_any', rstrpos(psfile, '.eps')
-   psfile = psfile + '.eps'
-   
-endif
-
-;;;;;; END SET PLOT NAME ;;;;;;;;
 
 ldir = getenv('DROPBOX_DIR')+'/COS-Halos/lowions/'
 tdir = getenv('DROPBOX_DIR')+'/COS-Halos/Targets/'
@@ -818,6 +771,17 @@ ENDIF
                  color=clr.yellow, charsiz=1.5, align=0.5
       endfor
    endif
+
+   ;; Lines
+   if ss GE 1 then begin
+      xplt = 11. + 5*findgen(100)/99
+      off = 0.1
+      for jj=0,0 do begin
+         yplt = xplt + off*jj
+         oplot, xplt, yplt, linesty=2, color=clr.yellow
+      endfor
+   endif
+
    plot, [0], [0], /nodata
 
 endfor
