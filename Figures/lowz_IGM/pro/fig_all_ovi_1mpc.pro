@@ -3,7 +3,7 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
                   YMRG=ymrg, CSZ=csz, LSZ=lsz, POS=pos, NOCOS=nocos
 
   if not keyword_set(binsz) then binsz = 0.01
-  if not keyword_set(lsz) then lsz = 1.5 
+  if not keyword_set(lsz) then lsz = 1.8 
   if not keyword_set(csz) then csz = 2.3 
   if not keyword_set(dlim) then dlim = 5. ;arcmin
 
@@ -32,6 +32,10 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
   xtitle='!9r!X (kpc)'
   bclr = clr.black
   fclr = clr.lightgray
+  xmrg = [8,1]
+  ymrg = [4,1]
+
+  for ss=0,1 do begin
   
   plot,[0.],[0.],xrange=xrng,yrange=yrng,color=fclr,$
        background=bclr, charsize=csz,  xtickn=spcs, $
@@ -47,18 +51,25 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
 
   ;xyouts, 1000., 1300., '(a)', color=clr.black, align=0.5, charsi=lsz
 
+  epsym = 2
+  lpsym = 4
+  upsym = 1
+
   ;; Loop on Luminosity
   for qq=0L,sz[1]-1 do begin
      case qq of
         0: begin
            ppsym = 1
+           gclr = clr.yellow
            lbl = '< 0.1L*'
         end
         1: begin
+           gclr = clr.green
            ppsym = 2
            lbl = '(0.1-1) L*'
         end
         2: begin
+           gclr = clr.tomato
            ppsym = 4
            lbl = '> L*'
         end
@@ -75,9 +86,9 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
         late = where(strmatch(strtrim(struct[lim].gal_type,2), 'Late'), nlate) 
         unkn = where(strmatch(strtrim(struct[lim].gal_type,2), 'Unkn'), nunkn) 
 
-        if nearly GT 0 then oplot, [struct[lim[early]].dra], [struct[lim[early]].magerr[4]], color=clr.tomato, psym=8
-        if nlate GT 0 then oplot, [struct[lim[late]].dra], [struct[lim[late]].magerr[4]], color=clr.cyan, psym=8
-        if nunkn GT 0 then oplot, [struct[lim[unkn]].dra], [struct[lim[unkn]].magerr[4]], color=clr.gray, psym=8
+        if nearly GT 0 then oplot, [struct[lim[early]].dra], [struct[lim[early]].magerr[4]], color=gclr, psym=8
+        if nlate GT 0 then oplot, [struct[lim[late]].dra], [struct[lim[late]].magerr[4]], color=gclr, psym=8
+        if nunkn GT 0 then oplot, [struct[lim[unkn]].dra], [struct[lim[unkn]].magerr[4]], color=gclr, psym=8
 
         all_dra = [all_dra, struct[lim].dra]
         all_EW = [all_EW, struct[lim].magerr[4]]
@@ -98,9 +109,9 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
         late = where(strmatch(strtrim(struct[val].gal_type,2), 'Late'), nlate) 
         unkn = where(strmatch(strtrim(struct[val].gal_type,2), 'Unkn'), nunkn) 
 
-        if nearly GT 0 then oplot, [struct[val[early]].dra], [struct[val[early]].magerr[4]], color=clr.tomato, psym=ppsym
-        if nlate GT 0 then oplot, [struct[val[late]].dra], [struct[val[late]].magerr[4]], color=clr.cyan, psym=ppsym
-        if nunkn GT 0 then oplot, [struct[val[unkn]].dra], [struct[val[unkn]].magerr[4]], color=clr.gray, psym=ppsym
+        if nearly GT 0 then oplot, [struct[val[early]].dra], [struct[val[early]].magerr[4]], color=gclr, psym=epsym
+        if nlate GT 0 then oplot, [struct[val[late]].dra], [struct[val[late]].magerr[4]], color=gclr, psym=lpsym
+        if nunkn GT 0 then oplot, [struct[val[unkn]].dra], [struct[val[unkn]].magerr[4]], color=gclr, psym=upsym
      endif
 
      ;; Label
@@ -142,6 +153,19 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
   endfor
   plotsym, 0, 1.3, thick=4
   ;oplot, xmed, ymed, color=clr.gray, psym=-8
+
+  ;; Label
+  xlbl = 15.
+  ylbl = 700.
+  xyouts, xlbl, ylbl, 'Dwarf', color=clr.yellow, charsi=lsz
+  xyouts, xlbl, ylbl/1.5, 'Sub-L*', color=clr.green, charsi=lsz
+  xyouts, xlbl, ylbl/(1.5)^2, 'L*', color=clr.tomato, charsi=lsz
+
+  if ss GE 1 then begin
+     oplot, replicate(300., 2), yrng, color=clr.gray, linesty=2, thick=4
+  endif
+
+endfor
 
   x_psclose
   !p.multi=[0,1,1]
