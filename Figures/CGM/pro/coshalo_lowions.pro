@@ -72,6 +72,9 @@ tdir = getenv('DROPBOX_DIR')+'/COS-Halos/Targets/'
 
 if not keyword_set(MEGASTRUCT) then restore, ldir+'/cosmetals_megastructure.sav' 
 
+if not keyword_set(LSZ) then lsz = 2.0
+   yrange = [0.003, 3.]
+
 ;pushd, ldir
    
 
@@ -127,6 +130,7 @@ red = where(megastruct.galaxy.sfr_uplim eq 'yes', nred, complement = blue, ncomp
    thisblend = sindgen(ngals)
    take_tran = fltarr(ngals)
    yquant = fltarr(ngals)
+   flg_det = intarr(ngals)
    thislam = [1260.4, 1334.5, 2796.3]  ;; SiII, CII, MgII
    aionz = [14, 6, 12]
    ioni = 2
@@ -147,8 +151,10 @@ red = where(megastruct.galaxy.sfr_uplim eq 'yes', nred, complement = blue, ncomp
 
          IF ((megastruct[i].ion[ionz, ioni].trans[thistrans[i]].flg EQ 5.) OR $
              (megastruct[i].ion[ionz, ioni].trans[thistrans[i]].flg EQ 7.)) THEN BEGIN
-            if flg_low LE 0 then $
-               yquant[i] = yquant[i] < (2.0 * megastruct[i].ion[ionz,ioni].trans[thistrans[i]].sigwrest); 2 sigma upper limits
+            if flg_low LE 0 then begin
+               yquant[i] = yquant[i] < (2.0 * megastruct[i].ion[ionz,ioni].trans[thistrans[i]].sigwrest) ; 2 sigma upper limits
+               flg_det[i] = 3
+            endif
          ENDIF ELSE BEGIN
             ;; Value
             if thistrans[i] NE 11 then begin
@@ -164,6 +170,7 @@ red = where(megastruct.galaxy.sfr_uplim eq 'yes', nred, complement = blue, ncomp
                endif
                print, i, jj, take_tran[i], xquant[i], yquant[i] 
                flg_low = 1
+               flg_det[i] = 1
             endif
          ENDELSE
 
@@ -176,12 +183,11 @@ red = where(megastruct.galaxy.sfr_uplim eq 'yes', nred, complement = blue, ncomp
    ;; In Angstrom
    yquant = yquant / 1000.
    ;ylabel = 'EW !drest,'+ionnm+strioni+','+strtrim(string(thislam, format = '(i4)'), 2)+'!n [A]'
-   ylabel = 'EW !drest!N !n [A]'
+   ylabel = 'W!drest!N (Low Ions) [A]'
    goodcol = where(yquant gt 0.)
    ymin = 0.0060                ;min(yquant[goodcol])
 
    ymax = max(yquant[goodcol]) + 1.0
-   yrange = [ymin, ymax]
 
    
    ;; Plot the detections. Don't just plot everything, since we
@@ -200,11 +206,12 @@ red = where(megastruct.galaxy.sfr_uplim eq 'yes', nred, complement = blue, ncomp
    nblendbluerat = 0
    
    
-   det = where(megastruct[red].ion[ionz, ioni].nflg eq 1 or megastruct[red].ion[ionz, ioni].nflg eq 2, ndet)
-   det2 = where(megastruct[blue].ion[ionz, ioni].nflg eq 1 or megastruct[blue].ion[ionz, ioni].nflg eq 2, ndet2)
+   det = where(flg_det[red] EQ 1, ndet) ;megastruct[red].ion[ionz, ioni].nflg eq 1 or megastruct[red].ion[ionz, ioni].nflg eq 2, ndet)
+   det2 = where(flg_det[blue] EQ 1, ndet2) ;megastruct[blue].ion[ionz, ioni].nflg eq 1 or megastruct[blue].ion[ionz, ioni].nflg eq 2, ndet2)
    
 ;;Add arrows for the Upper limits (non-detections)
-   lim = where((megastruct.ion[ionz, ioni].nflg eq 3 AND thisblend NE 'blend'), nlim) ; will have not blends in it. whatever. I think this is proper. 
+   lim = where(flg_det EQ 3 AND thisblend NE 'blend', nlim) ; will have not blends in it. whatever. I think this is proper. 
+
    lim2 = -1                                                                          ; irrelevant
    lim3 = -1
    nlim3 = 1                    ; for consistency with stupid where. 
@@ -239,126 +246,153 @@ endif else begin
    bgcol = 0
 endelse 
 
-ct_psfill_black, col = bgcol
 
-IF ~keyword_set(EQW) THEN BEGIN
-plot, [0], [0], /nodata, yr = yrange, ys = 1, xr = xrange, xs = 1, $
-      ytit = ylabel, xtit = xlabel, /noerase, col = fgcol, $
-      chars = 2.0
-ENDIF ELSE BEGIN
-plot, [0], [0], /nodata, yr = yrange, ys = 1, xr = xrange, xs = 1, $
-      ytit = ylabel, xtit = xlabel, /noerase, col = fgcol, $
-      chars = 2.0, /ylog
-ENDELSE
+;; Loop !
 
+for ss=0,2 do begin
 
+   ct_psfill_black, col = bgcol
+   plot, [0], [0], /nodata, yr = yrange, ys = 1, xr = xrange, xs = 1, $
+         ytit = ylabel, xtit = xlabel, col = fgcol, $
+         chars = 2.0, /ylog, xmarg=[8,2], ymarg=[4,1], /noeras
+   
 ;; Plot the detections. Don't just plot everything, since we
 ;; want to only outline non-detections
-IF (det[0] GE 0) THEN BEGIN
-   oplot, xquant[red[det]], yquant[red[det]], psym = symcat(14, col = fgcol), syms = 3.0
-   oplot, xquant[red[det]], yquant[red[det]], psym = symcat(14, col = redcol), syms = 2.0
-ENDIF
+   IF (det[0] GE 0) THEN BEGIN
+      oplot, xquant[red[det]], yquant[red[det]], psym = symcat(14, col = fgcol), syms = 3.0
+      oplot, xquant[red[det]], yquant[red[det]], psym = symcat(14, col = redcol), syms = 2.0
+   ENDIF
+   
+   IF (det2[0] GE 0) THEN BEGIN
+      oplot, xquant[blue[det2]], yquant[blue[det2]], psym = symcat(15, col = fgcol), syms = 2.3
+      oplot, xquant[blue[det2]], yquant[blue[det2]], psym = symcat(15, col = bluecol), syms = 1.5
+   ENDIF
+   
 
-IF (blendsred[0] GE 0) THEN BEGIN
-   oplot, xquant[red[blendsred]], yquant[red[blendsred]], psym = symcat(14, col = fgcol), syms = 3.0
-   oplot, xquant[red[blendsred]], yquant[red[blendsred]], psym = symcat(14, col = redcol), syms = 2.0
-ENDIF
-IF (blendsredrat[0] GE 0) THEN BEGIN
-   oplot, xquant[red[blendsredrat]], yquant[red[blendsredrat]], psym = symcat(14, col = fgcol), syms = 3.0
-   oplot, xquant[red[blendsredrat]], yquant[red[blendsredrat]], psym = symcat(14, col = redcol), syms = 2.0
-ENDIF
+   IF (lim[0] GE 0) THEN BEGIN
+      for ii = 0, nlim-1 do begin
+         ;;First plot a blue outlined square or red-outlined triangle as the
+         ;;symbol
+         IF ~keyword_set(ionratio) THEN BEGIN
+            if megastruct[lim[ii]].galaxy.sfr_uplim eq "yes" then begin
+               ;;Red
+               oplot, [xquant[lim[ii]]], [yquant[lim[ii]]], $
+                      psym = 4, col = redcol, syms = 3.0, thick = 8
+            
+            endif else begin
+               ;;blue
+               oplot, [xquant[lim[ii]]], [yquant[lim[ii]]], $
+                      psym = 6, col = bluecol, syms = 2.3, thick = 8
+            endelse 
+         ENDIF
+         
+         ;;Now plot the down-facing arrow
+         plotsym, 1, 4, thick = 10
+         oplot, [xquant[lim[ii]]], [yquant[lim[ii]]], psym = 8, col = fgcol
+      endfor 
+;;Add arrows for the lower limits (saturated)
+   ENDIF
 
-IF (det2[0] GE 0) THEN BEGIN
-   oplot, xquant[blue[det2]], yquant[blue[det2]], psym = symcat(15, col = fgcol), syms = 2.3
-   oplot, xquant[blue[det2]], yquant[blue[det2]], psym = symcat(15, col = bluecol), syms = 1.5
-ENDIF
-
-IF (blendsblue[0] GE 0) THEN BEGIN
-   oplot, xquant[blue[blendsblue]], yquant[blue[blendsblue]], psym = symcat(15, col = fgcol), syms = 2.3
-   oplot, xquant[blue[blendsblue]], yquant[blue[blendsblue]], psym = symcat(15, col = bluecol), syms = 1.5
-ENDIF
-IF (blendsbluerat[0] GE 0) THEN BEGIN
-   oplot, xquant[blue[blendsbluerat]], yquant[blue[blendsbluerat]], psym = symcat(15, col = fgcol), syms = 2.3
-   oplot, xquant[blue[blendsbluerat]], yquant[blue[blendsbluerat]], psym = symcat(15, col = bluecol), syms = 1.5
-ENDIF
-
-
-IF (lim[0] GE 0) THEN BEGIN
-   for ii = 0, nlim-1 do begin
-      ;;First plot a blue outlined square or red-outlined triangle as the
-      ;;symbol
-      IF ~keyword_set(ionratio) THEN BEGIN
-         if megastruct[lim[ii]].galaxy.sfr_uplim eq "yes" then begin
+   IF (limplot[0] GE 0) THEN BEGIN
+      for ii = 0, nlimplot-1 do begin
+         ;;First plot a blue outlined square or red-outlined triangle as the
+         ;;symbol
+         
+         if megastruct[limplot[ii]].galaxy.sfr_uplim eq "yes" then begin
             ;;Red
-            oplot, [xquant[lim[ii]]], [yquant[lim[ii]]], $
+            oplot, [xquant[limplot[ii]]], [yquant[limplot[ii]]], $
                    psym = 4, col = redcol, syms = 3.0, thick = 8
             
          endif else begin
             ;;blue
-            oplot, [xquant[lim[ii]]], [yquant[lim[ii]]], $
+            oplot, [xquant[limplot[ii]]], [yquant[limplot[ii]]], $
                    psym = 6, col = bluecol, syms = 2.3, thick = 8
          endelse 
-      ENDIF
-      
-      ;;Now plot the down-facing arrow
-      plotsym, 1, 4, thick = 10
-      oplot, [xquant[lim[ii]]], [yquant[lim[ii]]], psym = 8, col = fgcol
-   endfor 
-;;Add arrows for the lower limits (saturated)
-ENDIF
+      endfor 
+   ENDIF
 
-IF (limplot[0] GE 0) THEN BEGIN
-   for ii = 0, nlimplot-1 do begin
-      ;;First plot a blue outlined square or red-outlined triangle as the
-      ;;symbol
-      
-      if megastruct[limplot[ii]].galaxy.sfr_uplim eq "yes" then begin
-         ;;Red
-         oplot, [xquant[limplot[ii]]], [yquant[limplot[ii]]], $
-                psym = 4, col = redcol, syms = 3.0, thick = 8
-         
-      endif else begin
-         ;;blue
-         oplot, [xquant[limplot[ii]]], [yquant[limplot[ii]]], $
-                psym = 6, col = bluecol, syms = 2.3, thick = 8
-      endelse 
-      
-      
-   endfor 
+   IF (lim2[0] GE 0) THEN BEGIN
+      for ii = 0, nlim2-1 do begin
+         plotsym, 2, 4, thick = 10
+         oplot, [xquant[lim2[ii]]], [yquant[lim2[ii]]], psym = 8, col = fgcol
+      endfor 
+   ENDIF
    
-ENDIF
-
-IF (lim2[0] GE 0) THEN BEGIN
-   for ii = 0, nlim2-1 do begin
-      plotsym, 2, 4, thick = 10
-      oplot, [xquant[lim2[ii]]], [yquant[lim2[ii]]], psym = 8, col = fgcol
-   endfor 
-ENDIF
-
 ;;;; Galaxy Property Limits
-IF (xuplim[0] GE 0) THEN BEGIN
-   for ii = 0, nxup-1 do begin
-      plotsym, 6, 4, thick = 10
-      oplot, [xquant[xuplim[ii]]], [yquant[xuplim[ii]]], psym = 8, col = fgcol
-   endfor 
-ENDIF
-
-IF (xlowlim[0] GE 0) THEN BEGIN
-   for ii = 0, nxlow-1 do begin
-      plotsym, 7, 4, thick = 10
-      oplot, [xquant[xlowlim[ii]]], [yquant[xlowlim[ii]]], psym = 8, col = fgcol
-   endfor 
-ENDIF
+   IF (xuplim[0] GE 0) THEN BEGIN
+      for ii = 0, nxup-1 do begin
+         plotsym, 6, 4, thick = 10
+         oplot, [xquant[xuplim[ii]]], [yquant[xuplim[ii]]], psym = 8, col = fgcol
+      endfor 
+   ENDIF
+   
+   IF (xlowlim[0] GE 0) THEN BEGIN
+      for ii = 0, nxlow-1 do begin
+         plotsym, 7, 4, thick = 10
+         oplot, [xquant[xlowlim[ii]]], [yquant[xlowlim[ii]]], psym = 8, col = fgcol
+      endfor 
+   ENDIF
 
 ;;; weirdos. upper and lower limits. 
-IF (lim3[0] GE 0) THEN BEGIN
-   for ii = 0, nlim3-1 do begin
-      plotsym, 2, 4, thick = 10
-      oplot, [xquant[lim3[ii]]], [yquant[lim3[ii]]], psym = 8, col = fgcol
-      plotsym, 1, 4, thick = 10
-      oplot, [xquant[lim3[ii]]], [yquant[lim3[ii]]], psym = 8, col = fgcol
-   endfor 
-ENDIF
+   IF (lim3[0] GE 0) THEN BEGIN
+      for ii = 0, nlim3-1 do begin
+         plotsym, 2, 4, thick = 10
+         oplot, [xquant[lim3[ii]]], [yquant[lim3[ii]]], psym = 8, col = fgcol
+         plotsym, 1, 4, thick = 10
+         oplot, [xquant[lim3[ii]]], [yquant[lim3[ii]]], psym = 8, col = fgcol
+      endfor 
+   ENDIF
+   
+   
+   ;; Covering fraction
+   if ss GE 1 then begin
+      rho_cut = 70.
+      ;; Split them
+      oplot, replicate(rho_cut, 2), [1e-10,1e10], color=clr.green, linesty=1
+      oplot, replicate(160., 2), [1e-10,1e10], color=clr.green, linesty=1
+
+      ;; Stats
+      bin1 = where(xquant LT rho_cut, nbin1, complement=bin2, ncomplement=nbin2)
+      
+      for jj=0,1 do begin
+         case jj of 
+            0: begin
+               binv = bin1
+               xxy = rho_cut/2.
+               nbin = nbin1
+            end
+            1: begin
+               binv = bin2
+               nbin = nbin2
+               xxy = mean([rho_cut,160.])
+            end
+            else: stop
+         endcase
+         det_10 = where(yquant[binv] GT 0.1 AND flg_det[binv], npos)
+         cov_10 = float(npos)/nbin
+         det_03 = where(yquant[binv] GT 0.03 AND flg_det[binv], npos)
+         cov_03 = float(npos)/nbin
+         xyouts, xxy, yrange[1]/1.5, 'C!df!N = '+string(cov_10,format='(f4.2)')+$
+                 ' ('+string(cov_03,format='(f4.2)')+')', color=clr.yellow, charsiz=lsz, $
+                 align=0.5
+      endfor
+   endif
+
+   ;; Chen+10b model (Using h_100 instead of h_72)
+   if ss GT 1 then begin
+      rho = findgen(200.) + 1
+      a0 = 1.5
+      a1 = -1.8
+      EW = exp(a0 + a1 * alog10(rho * (72./100)))
+      
+      oplot, rho, EW, color=clr.gray, linesty=2, thick=4
+   endif
+
+   plot, [0], [0], /nodata
+
+endfor
+;stop
+
 
 
 ;;Panel label for HST proposal
