@@ -12,7 +12,8 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
 
   ;; Cloudy output
   if not keyword_set(CLDY) then $
-     cldy = xmrdfits('~/Cloudy/Grid/Output/z0_igm_qg.fits',1)
+     cldy = xmrdfits('~/Cloudy/Grid/Output/cgm_z0.2_qg.fits',1)
+     ;cldy = xmrdfits('~/Cloudy/Grid/Output/z0_igm_qg.fits',1)
      ;cldy = xmrdfits('~/Dropbox/COS-Halos/lowions/finercldygrid_logn_coshalos.fits',1)
 
   ;; PLOT
@@ -33,10 +34,10 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
         /nodata, xrange=xrng, ystyle=9, ytitl=ytit, $
         yrange=yrng, xstyle=9, /xlog, /ylog
 
-  xyouts, 5e-7, 2e-1, 'z=0; EUVB only', color=fclr, charsi=lsz
+  xyouts, 5e-7, 2e-1, 'z=0.2; EUVB only', color=fclr, charsi=lsz
 
-  ;NHI_val = [15., 17., 19]
-  NHI_val = [15.]
+  NHI_val = [15., 17., 19]
+  ;NHI_val = [15.]
   nNHI = n_elements(NHI_val)
   NHI_clr = [clr.tomato, clr.cyan, clr.yellow]
 

@@ -86,9 +86,9 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
         late = where(strmatch(strtrim(struct[lim].gal_type,2), 'Late'), nlate) 
         unkn = where(strmatch(strtrim(struct[lim].gal_type,2), 'Unkn'), nunkn) 
 
-        if nearly GT 0 then oplot, [struct[lim[early]].dra], [struct[lim[early]].magerr[4]], color=gclr, psym=8
-        if nlate GT 0 then oplot, [struct[lim[late]].dra], [struct[lim[late]].magerr[4]], color=gclr, psym=8
-        if nunkn GT 0 then oplot, [struct[lim[unkn]].dra], [struct[lim[unkn]].magerr[4]], color=gclr, psym=8
+        if nearly GT 0 then oplot, [struct[lim[early]].dra], [struct[lim[early]].magerr[4]], color=gclr, psym=8, symsiz=sysz
+        if nlate GT 0 then oplot, [struct[lim[late]].dra], [struct[lim[late]].magerr[4]], color=gclr, psym=8, symsiz=sysz
+        if nunkn GT 0 then oplot, [struct[lim[unkn]].dra], [struct[lim[unkn]].magerr[4]], color=gclr, psym=8, symsiz=sysz
 
         all_dra = [all_dra, struct[lim].dra]
         all_EW = [all_EW, struct[lim].magerr[4]]
@@ -109,9 +109,9 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
         late = where(strmatch(strtrim(struct[val].gal_type,2), 'Late'), nlate) 
         unkn = where(strmatch(strtrim(struct[val].gal_type,2), 'Unkn'), nunkn) 
 
-        if nearly GT 0 then oplot, [struct[val[early]].dra], [struct[val[early]].magerr[4]], color=gclr, psym=epsym
-        if nlate GT 0 then oplot, [struct[val[late]].dra], [struct[val[late]].magerr[4]], color=gclr, psym=lpsym
-        if nunkn GT 0 then oplot, [struct[val[unkn]].dra], [struct[val[unkn]].magerr[4]], color=gclr, psym=upsym
+        if nearly GT 0 then oplot, [struct[val[early]].dra], [struct[val[early]].magerr[4]], color=gclr, psym=epsym, symsiz=sysz
+        if nlate GT 0 then oplot, [struct[val[late]].dra], [struct[val[late]].magerr[4]], color=gclr, psym=lpsym, symsiz=sysz
+        if nunkn GT 0 then oplot, [struct[val[unkn]].dra], [struct[val[unkn]].magerr[4]], color=gclr, psym=upsym, symsiz=sysz
      endif
 
      ;; Label
