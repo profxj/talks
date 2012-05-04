@@ -12,6 +12,7 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
      summ_fil = '/u/xavier/paper/OVI/Galaxies/Analysis/all_galabs_1Mpc_strct.fits'
   struct = xmrdfits(summ_fil,1)
   ngal = n_elements(struct)
+  sysz = 1.5
 
   ;; Luminosity cuts
   lum_cuts = [ [0., 0.1], $
@@ -157,9 +158,10 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
   ;; Label
   xlbl = 15.
   ylbl = 700.
-  xyouts, xlbl, ylbl, 'Dwarf', color=clr.yellow, charsi=lsz
-  xyouts, xlbl, ylbl/1.5, 'Sub-L*', color=clr.green, charsi=lsz
-  xyouts, xlbl, ylbl/(1.5)^2, 'L*', color=clr.tomato, charsi=lsz
+  lsz2 = 2.3
+  xyouts, xlbl, ylbl, 'Dwarf', color=clr.yellow, charsi=lsz2
+  xyouts, xlbl, ylbl/1.5, 'Sub-L*', color=clr.green, charsi=lsz2
+  xyouts, xlbl, ylbl/(1.5)^2, 'L*', color=clr.tomato, charsi=lsz2
 
   if ss GE 1 then begin
      oplot, replicate(300., 2), yrng, color=clr.gray, linesty=2, thick=4

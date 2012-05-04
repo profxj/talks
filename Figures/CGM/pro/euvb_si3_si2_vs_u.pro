@@ -38,10 +38,10 @@ pro euvb_si3_si2_vs_u, CLDY=cldy
      
      xyouts, 5e-6, 1e2, 'EUVB', color=fclr, charsi=lsz
      
-     NHI_val = [15., 17., 19]
+     NHI_val = [15., 17., 18., 19]
      ;NHI_val = [15.]
      nNHI = n_elements(NHI_val)
-     NHI_clr = [clr.tomato, clr.cyan, clr.yellow]
+     NHI_clr = [clr.tomato, clr.green, clr.cyan, clr.yellow]
      
      for ss=0L,nNHI-1 do begin
         idx = where(abs(cldy.NHI - NHI_val[ss]) LT 1e-3)
@@ -58,7 +58,7 @@ pro euvb_si3_si2_vs_u, CLDY=cldy
 
      ;; Lines
      if qq GT 0 then begin
-        oplot, xrng, [1., 1.], color=clr.gray, linesty=2, thick=4
+        oplot, xrng, [0.5, 0.5], color=clr.gray, linesty=2, thick=4
         oplot, xrng, replicate(30., 2), color=clr.gray, linesty=2, thick=4
      endif
      if qq GT 1 then begin

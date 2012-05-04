@@ -30,16 +30,16 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
   yrng = [1e-6, 1.]
       ;;
   plot, [0.], [0.], color=fclr, background=bclr, charsize=csz,$
-        xmargin=[8.0,8], ymargin=[4,4.], xtitle=xtit, $
-        /nodata, xrange=xrng, ystyle=9, ytitl=ytit, $
+        xmargin=[8.0,2], ymargin=[4,4.], xtitle=xtit, $
+        /nodata, xrange=xrng, ystyle=1, ytitl=ytit, $
         yrange=yrng, xstyle=9, /xlog, /ylog
 
   xyouts, 5e-7, 2e-1, 'z=0.2; EUVB only', color=fclr, charsi=lsz
 
-  NHI_val = [15., 17., 19]
+  NHI_val = [15., 17., 18., 19]
   ;NHI_val = [15.]
   nNHI = n_elements(NHI_val)
-  NHI_clr = [clr.tomato, clr.cyan, clr.yellow]
+  NHI_clr = [clr.tomato, clr.green, clr.cyan, clr.yellow]
 
   for ss=0L,nNHI-1 do begin
      idx = where(abs(cldy.NHI - NHI_val[ss]) LT 1e-3)
@@ -50,7 +50,7 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
      xHI = 10.d^scldy.X[1,1]
      oplot, nH, xHI, color=NHI_clr[ss]
      ;; Label
-     xyouts, 7e-3, 5e-6*(1.5^ss), 'N!dHI!N = 10!u'+strtrim(round(NHI_val[ss]),2)+'!N cm!u-2!N', $
+     xyouts, 7e-3, 5e-6*(2.5^ss), 'N!dHI!N = 10!u'+strtrim(round(NHI_val[ss]),2)+'!N cm!u-2!N', $
              color=NHI_clr[ss], charsi=lsz
   endfor
 
@@ -68,8 +68,8 @@ pro fig_xhi_vs_nh_vs_nhi, CLDY=cldy
   ;           color=lclr, charsiz=csz, align=0.0
   ;   oplot, [xrng[1],xrng[1]*0.70], replicate(xHIval,2), color=lclr, thick=5
   ;endfor
-  xyouts, 0.97, 0.5, 'size (pc; N!dHI!N = 10!u15!N cm!u-2!N)', color=fclr, charsi=csz, $
-          align=0.5, orient=90, /norma
+;  xyouts, 0.97, 0.5, 'size (pc; N!dHI!N = 10!u15!N cm!u-2!N)', color=fclr, charsi=csz, $
+;          align=0.5, orient=90, /norma
 
   ;; Top axis
 ;  rhob = c.rhoc * (0.72)^2 * 0.04  ;; Mass density in baryons g/cm^3

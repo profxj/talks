@@ -348,8 +348,8 @@ for ss=0,2 do begin
    if ss GE 1 then begin
       rho_cut = 70.
       ;; Split them
-      oplot, replicate(rho_cut, 2), [1e-10,1e10], color=clr.green, linesty=1
-      oplot, replicate(160., 2), [1e-10,1e10], color=clr.green, linesty=1
+      oplot, replicate(rho_cut, 2), [1e-10,1e10], color=clr.green, linesty=2, thick=7
+      oplot, replicate(160., 2), [1e-10,1e10], color=clr.green, linesty=2, thick=7
 
       ;; Stats
       bin1 = where(xquant LT rho_cut, nbin1, complement=bin2, ncomplement=nbin2)
@@ -385,7 +385,7 @@ for ss=0,2 do begin
       a1 = -1.8
       EW = exp(a0 + a1 * alog10(rho * (72./100)))
       
-      oplot, rho, EW, color=clr.gray, linesty=2, thick=4
+      oplot, rho, EW, color=clr.magenta, linesty=2, thick=7
    endif
 
    plot, [0], [0], /nodata

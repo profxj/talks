@@ -663,8 +663,8 @@ if keyword_set(white) then begin
    bgcol = 255
 endif else begin
    xclr = jw_setclrs(/dark)
-   bluecol = xclr[1]
-   redcol = xclr[2]
+   bluecol = clr.cyan
+   redcol = clr.tomato
    fgcol = 255
    bgcol = 0
 endelse 
@@ -792,8 +792,8 @@ ENDIF
    if ss GE 1 then begin
       rho_cut = 70.
       ;; Split them
-      oplot, replicate(rho_cut, 2), [1e-10,1e10], color=clr.green, linesty=1
-      oplot, replicate(160., 2), [1e-10,1e10], color=clr.green, linesty=1
+      oplot, replicate(rho_cut, 2), [1e-10,1e10], color=clr.green, linesty=2, thick=7
+      oplot, replicate(160., 2), [1e-10,1e10], color=clr.green, linesty=2, thick=7
 
       ;; Stats
       bin1 = where(xquant LT rho_cut, nbin1, complement=bin2, ncomplement=nbin2)
@@ -815,7 +815,7 @@ ENDIF
             else: stop
          endcase
          xyouts, xxy, yrange[1]-0.25, 'C!df!N = '+string(cf,format='(f4.2)'), $
-                 color=clr.yellow, charsiz=1.5, align=0.5
+                 color=clr.yellow, charsiz=1.8, align=0.5
       endfor
    endif
    plot, [0], [0], /nodata

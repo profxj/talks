@@ -663,8 +663,8 @@ if keyword_set(white) then begin
    bgcol = 255
 endif else begin
    xclr = jw_setclrs(/dark)
-   bluecol = xclr[1]
-   redcol = xclr[2]
+   bluecol = clr.cyan
+   redcol = clr.tomato
    fgcol = 255
    bgcol = 0
 endelse 
