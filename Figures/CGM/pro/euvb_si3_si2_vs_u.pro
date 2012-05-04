@@ -12,7 +12,8 @@ pro euvb_si3_si2_vs_u, CLDY=cldy
 
   ;; Cloudy output
   if not keyword_set(CLDY) then $
-     cldy = xmrdfits('~/Cloudy/Grid/Output/z0_igm_qg.fits',1)
+     cldy = xmrdfits('~/Cloudy/Grid/Output/cgm_z0.2_qg.fits',1)
+     ;cldy = xmrdfits('~/Cloudy/Grid/Output/z0_igm_qg.fits',1)
      ;cldy = xmrdfits('~/Dropbox/COS-Halos/lowions/finercldygrid_logn_coshalos.fits',1)
 
   ;; PLOT
@@ -37,8 +38,8 @@ pro euvb_si3_si2_vs_u, CLDY=cldy
      
      xyouts, 5e-6, 1e2, 'EUVB', color=fclr, charsi=lsz
      
-                                ;NHI_val = [15., 17., 19]
-     NHI_val = [15.]
+     NHI_val = [15., 17., 19]
+     ;NHI_val = [15.]
      nNHI = n_elements(NHI_val)
      NHI_clr = [clr.tomato, clr.cyan, clr.yellow]
      
@@ -51,18 +52,18 @@ pro euvb_si3_si2_vs_u, CLDY=cldy
         yplt = 10.d^(scldy.X[14,3] - scldy.X[14,2])
         oplot, 10.^scldy.U, yplt, color=NHI_clr[ss]
         ;; Label
-        xyouts, 7e-3, 5e-6*(1.5^ss), 'N!dHI!N = 10!u'+strtrim(round(NHI_val[ss]),2)+'!N cm!u-2!N', $
+        xyouts, 2e-2, 2e-3*(2.5^ss), 'N!dHI!N = 10!u'+strtrim(round(NHI_val[ss]),2)+'!N cm!u-2!N', $
                 color=NHI_clr[ss], charsi=lsz
      endfor
 
      ;; Lines
      if qq GT 0 then begin
-        oplot, xrng, [1., 1.], color=clr.yellow, linesty=2, thick=4
-        oplot, xrng, replicate(30., 2), color=clr.yellow, linesty=2, thick=4
+        oplot, xrng, [1., 1.], color=clr.gray, linesty=2, thick=4
+        oplot, xrng, replicate(30., 2), color=clr.gray, linesty=2, thick=4
      endif
      if qq GT 1 then begin
-        oplot, replicate(1e-4,2), yrng, color=clr.yellow, linesty=2, thick=4
-        oplot, replicate(1e-2,2), yrng, color=clr.yellow, linesty=2, thick=4
+        oplot, replicate(3e-4,2), yrng, color=clr.gray, linesty=2, thick=4
+        oplot, replicate(1e-2,2), yrng, color=clr.gray, linesty=2, thick=4
      endif
   endfor
 

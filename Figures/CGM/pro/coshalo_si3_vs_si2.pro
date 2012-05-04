@@ -1,5 +1,5 @@
 
-pro coshalo_si2_vs_si3, ionz, ioni, galprop, psfile = psfile, white = white,  anyion = anyion, eqw = eqw, xion = xion, ionratio = ionratio, XPS=xps, MEGASTRUCT=megastruct
+pro coshalo_si3_vs_si2, ionz, ioni, galprop, psfile = psfile, white = white,  anyion = anyion, eqw = eqw, xion = xion, ionratio = ionratio, XPS=xps, MEGASTRUCT=megastruct
 
 ;;;;; Program to plot any column density or ratio of column densities
 ;;;;; vs. any galaxy property using the megastructures. 
@@ -61,15 +61,15 @@ pro coshalo_si2_vs_si3, ionz, ioni, galprop, psfile = psfile, white = white,  an
 
 
  ionz = 14
- ioni = 2
+ ioni = 3
  galprop = 'nion'
- xion = [14,3]
+ xion = [14,2]
  xps = 1
 
 
 
 ;;;;;;; SET PLOT NAME ;;;;;;;;
- psfile = 'coshalo_si2_vs_si3.ps'
+ psfile = 'coshalo_si3_vs_si2.ps'
 
 ;;;;;;; THE DEFAULTS SHOULD BE SENSIBLE ;;;;;
 
@@ -616,8 +616,8 @@ if keyword_set(white) then begin
    bgcol = 255
 endif else begin
    xclr = jw_setclrs(/dark)
-   bluecol = xclr[1]
-   redcol = xclr[2]
+   bluecol = clr.cyan
+   redcol = clr.tomato
    fgcol = 255
    bgcol = 0
 endelse 
