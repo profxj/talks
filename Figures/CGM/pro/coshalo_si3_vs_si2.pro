@@ -108,7 +108,7 @@ IF (galprop EQ 'smass') THEN BEGIN
 
 ;; log stellar mass
 xrange = [9.0, 11.5]
-xlabel = 'Log M!d*!n [M!dsun!n]'
+xlabel = 'log M!d*!n [M!dsun!n]'
 xquant =  megastruct.logmfinal
 xuplim = -1
 xlowlim = -1
@@ -133,7 +133,7 @@ IF (galprop EQ 'sfr') THEN BEGIN
 
 ;; Log SFR 
 xrange = [-1.7, 1.4]
-xlabel = 'Log SFR [M!dsun!n yr!u-1!n]'
+xlabel = 'log SFR [M!dsun!n yr!u-1!n]'
 xquant =  alog10(megastruct.galaxy.sfr)
 xuplim = where(megastruct.galaxy.sfr_uplim eq 'yes', nxup)
 xlowlim = -1
@@ -187,7 +187,7 @@ IF xioni eq 3 then strxioni = 'III'
 IF xioni eq 4 then strxioni = 'IV'
 IF xioni eq 5 then strxioni = 'V'
 IF xioni eq 6 then strxioni = 'VI'
-xlabel = 'Log N!d'+xionnm+strxioni+'!n [cm!u-2!n]'
+xlabel = 'log N!d'+xionnm+strxioni+'!n [cm!u-2!n]'
 goodcol = where(xquant gt 0.)
 xmin = min(xquant[goodcol]) - 0.5
 xmax = max(xquant[goodcol]) + 0.5
@@ -237,7 +237,7 @@ IF ioni eq 3 then strioni = 'III'
 IF ioni eq 4 then strioni = 'IV'
 IF ioni eq 5 then strioni = 'V'
 IF ioni eq 6 then strioni = 'VI'
-ylabel = 'Log N!d'+ionnm+strioni+'!n [cm!u-2!n]'
+ylabel = 'log N!d'+ionnm+strioni+'!n [cm!u-2!n]'
 goodcol = where(yquant gt 0.)
 ymin = min(yquant[goodcol]) - 0.5
 ymax = max(yquant[goodcol]) + 0.5
@@ -303,7 +303,7 @@ IF ionratio[1] eq 4 then strionib = 'IV'
 IF ionratio[1] eq 5 then strionib = 'V'
 IF ionratio[1] eq 6 then strionib = 'VI'
 
-ylabel = 'Log N!d'+ionnm+strioni+'!n/N!d'+ionnmb+strionib+'!n'
+ylabel = 'log N!d'+ionnm+strioni+'!n/N!d'+ionnmb+strionib+'!n'
 
 
 
@@ -454,7 +454,7 @@ IF ioni eq 3 then strioni = 'III'
 IF ioni eq 4 then strioni = 'IV'
 IF ioni eq 5 then strioni = 'V'
 IF ioni eq 6 then strioni = 'VI'
-ylabel = 'Log N!d'+ionnm+strioni+'!n [cm!u-2!n]'
+ylabel = 'log N!d'+ionnm+strioni+'!n [cm!u-2!n]'
 goodcol = where(yquant gt 0.)
 ymin = min(yquant[goodcol]) - 0.5
 ymax = max(yquant[goodcol]) + 0.5
@@ -629,7 +629,7 @@ for ss=0,1 do begin
    ct_psfill_black, col = bgcol
    plot, [0], [0], /nodata, yr = yrange, ys = 1, xr = xrange, xs = 1, $
          ytit = ylabel, xtit = xlabel, /noerase, col = fgcol, $
-         chars = 2.0, xmar=xmrg, ymar=ymrg
+         chars = 2.5, xmar=xmrg, ymar=ymrg
 
 
 ;; Plot the detections. Don't just plot everything, since we

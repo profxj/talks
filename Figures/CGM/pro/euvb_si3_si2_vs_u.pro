@@ -58,12 +58,12 @@ pro euvb_si3_si2_vs_u, CLDY=cldy
 
      ;; Lines
      if qq GT 0 then begin
-        oplot, xrng, [0.5, 0.5], color=clr.gray, linesty=2, thick=4
-        oplot, xrng, replicate(30., 2), color=clr.gray, linesty=2, thick=4
+        oplot, xrng, [0.5, 0.5], color=clr.gray, linesty=2, thick=6
+        oplot, xrng, replicate(30., 2), color=clr.gray, linesty=2, thick=6
      endif
      if qq GT 1 then begin
-        oplot, replicate(3e-4,2), yrng, color=clr.gray, linesty=2, thick=4
-        oplot, replicate(1e-2,2), yrng, color=clr.gray, linesty=2, thick=4
+        oplot, replicate(3e-4,2), yrng, color=clr.gray, linesty=2, thick=6
+        oplot, replicate(1e-2,2), yrng, color=clr.gray, linesty=2, thick=6
      endif
   endfor
 

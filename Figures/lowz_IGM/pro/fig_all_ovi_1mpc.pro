@@ -13,6 +13,7 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
   struct = xmrdfits(summ_fil,1)
   ngal = n_elements(struct)
   sysz = 1.5
+  sysz2 = 2.5
 
   ;; Luminosity cuts
   lum_cuts = [ [0., 0.1], $
@@ -36,7 +37,7 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
   xmrg = [8,1]
   ymrg = [4,1]
 
-  for ss=0,1 do begin
+  for ss=0,3 do begin
   
   plot,[0.],[0.],xrange=xrng,yrange=yrng,color=fclr,$
        background=bclr, charsize=csz,  xtickn=spcs, $
@@ -56,8 +57,11 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
   lpsym = 4
   upsym = 1
 
+  if ss GT 1 then q0 = 0 else q0 = 1
+  if ss GT 2 then q1 = 0 else q1 = 2
+
   ;; Loop on Luminosity
-  for qq=0L,sz[1]-1 do begin
+  for qq=q0,q1 do begin
      case qq of
         0: begin
            ppsym = 1
@@ -110,9 +114,9 @@ pro fig_all_ovi_1mpc, summ_fil, ALL_GAL=all_gal, NOPS=nops, NONHI=nonhi, $
         late = where(strmatch(strtrim(struct[val].gal_type,2), 'Late'), nlate) 
         unkn = where(strmatch(strtrim(struct[val].gal_type,2), 'Unkn'), nunkn) 
 
-        if nearly GT 0 then oplot, [struct[val[early]].dra], [struct[val[early]].magerr[4]], color=gclr, psym=epsym, symsiz=sysz
-        if nlate GT 0 then oplot, [struct[val[late]].dra], [struct[val[late]].magerr[4]], color=gclr, psym=lpsym, symsiz=sysz
-        if nunkn GT 0 then oplot, [struct[val[unkn]].dra], [struct[val[unkn]].magerr[4]], color=gclr, psym=upsym, symsiz=sysz
+        if nearly GT 0 then oplot, [struct[val[early]].dra], [struct[val[early]].magerr[4]], color=gclr, psym=epsym, symsiz=sysz2
+        if nlate GT 0 then oplot, [struct[val[late]].dra], [struct[val[late]].magerr[4]], color=gclr, psym=lpsym, symsiz=sysz2
+        if nunkn GT 0 then oplot, [struct[val[unkn]].dra], [struct[val[unkn]].magerr[4]], color=gclr, psym=upsym, symsiz=sysz2
      endif
 
      ;; Label
