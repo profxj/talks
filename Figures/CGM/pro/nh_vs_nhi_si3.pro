@@ -29,13 +29,13 @@ pro nh_vs_nhi_si3, CLDY=cldy
   ytit = 'N!dH!N'
           
   xrng = [15., 20.]
-  yrng = [15., 25]
+  yrng = [17., 20]
       ;;
 
   plot, [0.], [0.], color=fclr, background=bclr, charsize=csz,$
         xmargin=[8.0,1.5], ymargin=[4,1], xtitle=xtit, $
         /nodata, xrange=xrng, ystyle=1, ytitl=ytit, $
-        yrange=yrng, xstyle=1, /xlog, /ylog, ytickformat='x_logticks'
+        yrange=yrng, xstyle=1 
   
   xyouts, 5e-6, 1e2, 'EUVB', color=fclr, charsi=lsz
      

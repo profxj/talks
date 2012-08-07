@@ -88,22 +88,22 @@ pro fig_lbg_sb, SHOW_INT=show_int
   kpc_arcsec = cosm_dist(z, /init, /angular)*1e3
   
   ;; Plot
-  oplot,  avg_r, avg_mu_kpc, color=lclr, psym=10, linesty=lsty
+  oplot,  avg_r, avg_mu_kpc, color=clr.yellow, psym=10, linesty=lsty
   if keyword_set(SHOW_INT) then $
-     oplot,  avg_r, avg_f*1e-2, color=clr.yellow, linesty=lsty
+     oplot,  avg_r, avg_f*1e-2, color=clr.white, linesty=lsty
   
   ;; Label
-  oplot, [0.4,0.44]*xrng[1], replicate(yrng[1]/4, 2), color=lclr, $
+  oplot, [0.4,0.44]*xrng[1], replicate(yrng[1]/4, 2), color=clr.yellow, $
          linesty=lsty
-  xyouts, 0.45*xrng[1], yrng[1]/4/1.1, 'Wind Model (0 EW; no IGM)', color=lclr, charsiz=lsz
-  oplot, [0.4,0.44]*xrng[1], replicate(yrng[1]/12, 2), color=clr.yellow, $
+  xyouts, 0.45*xrng[1], yrng[1]/4/1.1, 'Wind Model (0 EW; no IGM)', color=clr.yellow, charsiz=lsz
+  oplot, [0.4,0.44]*xrng[1], replicate(yrng[1]/12, 2), color=clr.white, $
          linesty=lsty
   xyouts, 0.45*xrng[1], yrng[1]/12/1.1, 'Observed profile (Steidel+11)', $
-          color=clr.yellow, charsiz=lsz
+          color=clr.white, charsiz=lsz
      
   ;; Data
   xval = findgen(100)
-  oplot, xval, 1e-2 * exp(-xval/22.), color=clr.yellow
+  oplot, xval, 1e-2 * exp(-xval/22.), color=clr.white
 
   if keyword_set( PSFILE ) then x_psclose
   !p.multi = [0,1,1]
