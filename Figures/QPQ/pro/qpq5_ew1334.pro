@@ -3,7 +3,7 @@
 ; fuse_velplt
 ;  V1.1
 ;------------------------------------------------------------------------------
-pro qpq5_ew1334, wrest, FOREST=forest, NOPS=nops, CSZ=csz, NOLBG=nolbg, XMRG=xmrg
+pro qpq5_ew1334, wrest, FOREST=forest, NOPS=nops, CSZ=csz, LBG=lbg, XMRG=xmrg
 
   if not keyword_set( LSZ ) then lsz = 1.8
   if not keyword_set( LTHICK ) then lthick = 4.
@@ -62,6 +62,8 @@ pro qpq5_ew1334, wrest, FOREST=forest, NOPS=nops, CSZ=csz, NOLBG=nolbg, XMRG=xmr
 
   ;if keyword_set(NOPS) then xyouts, 01., 2.2, '(b)', color=lclr, charsi=lsz, align=0.
 
+  xyouts, 200., 2.00, 'CII EW', color=clr.yellow, charsi=lsz
+
   ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; QPQ7
   gd = where( abs(qpq_strct.metal_wrest-wrest) LT 1e-3 AND $
@@ -102,7 +104,7 @@ pro qpq5_ew1334, wrest, FOREST=forest, NOPS=nops, CSZ=csz, NOLBG=nolbg, XMRG=xmr
   lim = where(LBG_EW LT 3*LBG_sigEW OR LBG_EW LT 0.02, complement=gdval)
 
   LBG_R = lbg[lbg_idx]. srvy_mag
-  if not  keyword_set(NOLBG) then begin
+  if keyword_set(LBG) then begin
      oplot, LBG_R[gdval], LBG_EW[gdval], color=lbgc, psym=1
      plotsym, 1, 1.4, thick=5
      oplot, LBG_R[lim], LBG_EW[lim] > 0.02, color=lbgc, psym=8

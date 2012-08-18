@@ -1,5 +1,5 @@
 ;; Stacks several plots together
-pro qpq5_othick_metals
+pro qpq5_othick_metals, LBG=lbg
 
   if not keyword_set( LSZ ) then lsz = 1.8
   if not keyword_set( LTHICK ) then lthick = 4.
@@ -15,6 +15,7 @@ pro qpq5_othick_metals
   qpq5_strct = xmrdfits(qpq_fil, 1)
 
   if not keyword_set(PSFILE) then psfile = 'qpq5_othick_metals.ps'
+  if keyword_set(LBG) then psfile = 'qpq5_othick_metals_lbg.ps'
 
   ;; Plot
   if keyword_set( PSFILE ) then x_psopen, psfile, /maxs
@@ -24,7 +25,7 @@ pro qpq5_othick_metals
   qpq5_covering, /nops, csz=csize, XMRG=xmrg
 
   ;; CII EW
-  qpq5_ew1334, /nops, csz=csize, /NOLBG, XMRG=xmrg
+  qpq5_ew1334, /nops, csz=csize, XMRG=xmrg, LBG=lbg
 
   if keyword_set( PSFILE ) then x_psclose
   !p.multi=[0,1,1]

@@ -4,6 +4,9 @@ pro mk_coshalo_gallery
   coshalo_gallery, 'J0042-1037', '358_9', IMG=img, STRCT=strct, PSFILE=psfile
   spawn, 'ps2pdf '+psfile
 
+  coshalo_gallery, 'J0226+0015', '268_22', IMG=img, STRCT=strct, PSFILE=psfile
+  spawn, 'ps2pdf '+psfile
+
   coshalo_gallery, 'J1009+0713',  '204_17', PSFILE=psfile, SMAX=20.
   spawn, 'ps2pdf '+psfile
 

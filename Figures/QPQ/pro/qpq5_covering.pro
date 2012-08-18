@@ -6,7 +6,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
                   CSZ=csz, XMRG=xmrg
 
   ;; Get structure if necessary
-  if not keyword_set( PSFILE ) then psfile = 'fig_covering.ps'
+  if not keyword_set( PSFILE ) then psfile = 'qpq5_covering.ps'
   if not keyword_set( CSZ ) then csz = 1.9
   if not keyword_set( LSZ ) then lsz = 1.9
 
@@ -79,6 +79,9 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
                  psym=8, errcolor=eclr, errthick=5, /lobar, color=eclr
      oploterror, [xbin], [cov_frac], [abs(xbin-x2)], [(abs(cov_frac - npoiss[0]/float(npts))) < (1.-cov_frac)], $
                  psym = 8, errcolor = eclr, errthick = 5, /hibar, color = eclr
+
+     plotsym, 2, 3.7, thick=5
+     oplot, [xbin], [cov_frac], psym=8, color=eclr
      
      ;; ;;;;;;;;;;;;;;;
      ;; Random IGM 
@@ -99,10 +102,12 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
      oploterror, [xbin], [NLLS/float(npts)], 0.2*[NLLS/float(npts)], errcol=clr.cyan
   endfor
   
+  xyouts, 200., 0.95, 'Optically Thick Gas', color=clr.yellow, charsi=lsz
+
   ;; Add Rudie et al. 2012 :: r<R_vir = 30 +/- 14%
   lbgc = clr.red
   oploterror, [75.], [0.3], [25.], [0.14], color=lbgc, errcol=lbgc
-  plotsym, 4, 1.7, /fill
+  plotsym, 3, 1.7, /fill
   oplot, [75.], [0.3], color=lbgc, psym=8
 
   ;; Stats to R=200kpc
@@ -140,7 +145,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
         a = idx[jj]
         if qpq_strct[a].flg_OThick EQ 1 then FILL = 1 else FILL = 0
         if qpq_strct[a].flg_OThick LT 0 then vclr = clr.darkgray else vclr =lclr
-        plotsym, 0, 1.5, FILL=fill, thick=3
+        plotsym, 0, 0.7, FILL=fill, thick=3
         oplot, [qpq_strct[a].R_phys], [qpq_strct[a].z_Lya], color=vclr, psym=8
         ;; Outliers
         ;if (abs(vrel[a]) GE 1000) and FILL then print, NHI_qso[a], NHI_zfg[a], vrel[a]

@@ -1,3 +1,4 @@
+;; Now generating Lya
 pro fig_lbg_spec
 
   if not keyword_set( PSFILE ) then psfile = 'fig_lbg_spec.ps'

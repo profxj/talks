@@ -22,8 +22,8 @@ pro fig_lstar_ovi_1mpc, summ_fil, STRUCT=struct, PSFILE=psfile, NEAR=near, NOPS=
   clr = getcolor(/load)
   nclr = clr.green
   pclr = clr.tomato
-  lclr = clr.white
-;  lclr = clr.black
+  ;lclr = clr.white
+  lclr = clr.black
   ppsym = 4
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

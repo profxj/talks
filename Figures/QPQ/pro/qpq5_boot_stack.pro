@@ -52,7 +52,7 @@ pro qpq5_boot_stack, NOPLOT=noplot, EW_VALS=ew_vals
 ;  
   if not keyword_set(PSFILE) then psfile = 'qpq5_boot_stack.ps'
   if not keyword_set( NTOT ) then ntot = 12L
-  if not keyword_set( LSIZE ) then lsize = 1.2
+  if not keyword_set( LSIZE ) then lsize = 1.1
   if not keyword_set( LTHICK ) then lthick = 4.
   if not keyword_set( PTHICK ) then pthick = 2.
   if not keyword_set( BLSZ ) then blsz = 1.7
@@ -124,7 +124,7 @@ pro qpq5_boot_stack, NOPLOT=noplot, EW_VALS=ew_vals
      if not keyword_set(NOPLOT) then begin
         plot, [0], [0], $
               xrange=vmnx, $
-              yrange=ymnx, xtickn=xspaces, xmargin=[7,0], $
+              yrange=ymnx, xtickn=xspaces, xmargin=[7,20], $
               ymargin=[0,0], NODATA=nblnd, $ ;ytickn=yspaces, $
               charsize=csize, psym=10, background=clr.white, color=lclr, $
               xstyle=1, ystyle=ysty, thick=pthick, ytickinterval=ytint,$
@@ -178,10 +178,10 @@ pro qpq5_boot_stack, NOPLOT=noplot, EW_VALS=ew_vals
               color=lclr, charsize=LSIZE
 
       ;; Nspec
-      xtwo = 0.7
+      xtwo = 0.65
       if not keyword_set(NOPLOT) then $
          xyouts, xtwo*(vmnx[1]-vmnx[0])+vmnx[0], $
-                 ymnx[0]+ (ymnx[1]-ymnx[0])*0.25, $
+                 ymnx[0]+ (ymnx[1]-ymnx[0])*0.30, $
                  'N!dspec!N = '+string(n_elements(strct), format='(i2)'), $
                  color=lclr, charsize=LSIZE, align=0.
       ;; R range
@@ -193,8 +193,8 @@ pro qpq5_boot_stack, NOPLOT=noplot, EW_VALS=ew_vals
       
       if not keyword_set(NOPLOT) then $
          xyouts, xtwo*(vmnx[1]-vmnx[0])+vmnx[0], $
-                 ymnx[0]+ (ymnx[1]-ymnx[0])*0.40, $
-                 'R!dphys!N = ['+r1+','+r2+'] (kpc)', $
+                 ymnx[0]+ (ymnx[1]-ymnx[0])*0.15, $
+                 'R!dphys!N = ['+r1+','+r2+'] kpc', $
                  color=lclr, charsize=LSIZE, align=0.
 
       ;; EW
