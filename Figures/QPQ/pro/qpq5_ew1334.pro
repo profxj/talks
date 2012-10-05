@@ -88,7 +88,7 @@ pro qpq5_ew1334, wrest, FOREST=forest, NOPS=nops, CSZ=csz, LBG=lbg, XMRG=xmrg
 
   ;; 2 sigma??
   tsig = where( QPQ7_EW GT 2.*QPQ7_sigEW, ntsig) 
-  if ntsig GT 0 then oplot, [qpq_strct[ui[tsig]].R_phys], [QPQ7_EW[tsig]], color=clr.lightgray, psym=2
+  ;if ntsig GT 0 then oplot, [qpq_strct[ui[tsig]].R_phys], [QPQ7_EW[tsig]], color=clr.lightgray, psym=2
 
   ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; LBG

@@ -1,5 +1,6 @@
 ;; Stacks several plots together
-pro qpq5_othick_metals, LBG=lbg
+;; qpq5_othick_metals, psfile='qpq5_othick_metals_joe.ps', /nozfg, /neil_lbg
+pro qpq5_othick_metals, LBG=lbg, NOZFG=nozfg, PSFILE=psfile, NEIL_LBG=neil_lbg
 
   if not keyword_set( LSZ ) then lsz = 1.8
   if not keyword_set( LTHICK ) then lthick = 4.
@@ -22,7 +23,7 @@ pro qpq5_othick_metals, LBG=lbg
   !p.multi=[0,1,3]
 
   ;; Othick
-  qpq5_covering, /nops, csz=csize, XMRG=xmrg
+  qpq5_covering, /nops, csz=csize, XMRG=xmrg, NOZFG=nozfg, neil_lbg=neil_lbg
 
   ;; CII EW
   qpq5_ew1334, /nops, csz=csize, XMRG=xmrg, LBG=lbg

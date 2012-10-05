@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Plots OThick absorbers
 pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=nops, $
-                  CSZ=csz, XMRG=xmrg
+                  CSZ=csz, XMRG=xmrg, NOZFG=nozfg, NEIL_LBG=neil_lbg
 
   ;; Get structure if necessary
   if not keyword_set( PSFILE ) then psfile = 'qpq5_covering.ps'
@@ -52,7 +52,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
   plot, [0], [0], color=lclr, background=clr.white, charsize=csz,$
         xmargin=xmrg, ymargin=ymrg, xtitle=xtit, $
         ytitle=ytit, yrange=yrng, thick=4, xtickn=xspaces, $
-        xrange=xrng, ystyle=9, xstyle=1, psym=1, /nodata
+        xrange=xrng, ystyle=1+8*(not keyword_set(NOZFG)), xstyle=1, psym=1, /nodata
 
   ;; Label
   ;if keyword_set(NOPS) then xyouts, 01., 0.9, '(a)', color=lclr, charsi=lsz
@@ -104,56 +104,65 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
   
   xyouts, 200., 0.95, 'Optically Thick Gas', color=clr.yellow, charsi=lsz
 
-  ;; Add Rudie et al. 2012 :: r<R_vir = 30 +/- 14%
   lbgc = clr.red
-  oploterror, [75.], [0.3], [25.], [0.14], color=lbgc, errcol=lbgc
-  plotsym, 3, 1.7, /fill
-  oplot, [75.], [0.3], color=lbgc, psym=8
+  if not keyword_set(NEIL_LBG) then begin
+     ;; Add Rudie et al. 2012 :: r<R_vir = 30 +/- 14%
+     oploterror, [75.], [0.3], [25.], [0.14], color=lbgc, errcol=lbgc
+     plotsym, 3, 1.7, /fill
+     oplot, [75.], [0.3], color=lbgc, psym=8
+  endif else begin
+     readcol, 'neil_lbg.dat', x0, x1, cflo, cf, cfhi
+     meanx = (x0+x1) / 2.
+     oploterror, meanx, cf, [meanx-x0], [cf-cflo], errcol=lbgc, color=lbgc, /lobar, psym=1
+     oploterror, meanx, cf, [x1-meanx], [cfhi-cf], errcol=lbgc, color=lbgc, /hibar, psym=1
+  endelse
 
   ;; Stats to R=200kpc
   gdi = where(qpq_strct.R_phys LT 200., npts)
   gdot = where(qpq_strct[gdi].flg_OThick EQ 1, nothk)
   print, npts, ' systems with R<200 kpc and ', nothk, ' are othick.'
   
-  yrng = [1.5, 3.5]
-  ytit='z!dfg!N'
-  axis, yaxis = 1, color = lclr, charsi = csz, yrang = yrng, $
-        ysty = 1, ytit =ytit,  /save
-
-  ;; May need to expand beyond Lya, e.g. to include MgII
-  gd = where(qpq_strct.flg_EWLya GT 0, ngd)
-  qpq_strct = qpq_strct[gd]
-  
-  ;; Loop on velocity offset
-  vmnx = [ [-10000.,-1000], $
-           [-1000, -400], $
-           [-400, 400], $
-           [400, 1000], $
-           [1000, 10000] ]
-  v_clrs = [clr.blue, clr.green, clr.black, clr.orange, clr.red]
-  ;; JFH Hack for talk
-  v_clrs = [clr.black, clr.black, clr.black, clr.black, clr.black]
-  vrel = x_relvel(qpq_strct.z_Lya, qpq_strct.z_fg, /rev)
-
-  xlbl = 210.
-  ylbl = yrng[1]-1.
-  yoff = 1.3
-  for ii=0L,n_elements(v_clrs)-1 do begin
-     ;; Any?
-     idx = where(vrel GT vmnx[0, ii] and vrel LE vmnx[1,ii], na)
-     for jj=0L,na-1 do begin
-        a = idx[jj]
-        if qpq_strct[a].flg_OThick EQ 1 then FILL = 1 else FILL = 0
-        if qpq_strct[a].flg_OThick LT 0 then vclr = clr.darkgray else vclr =lclr
-        plotsym, 0, 0.7, FILL=fill, thick=3
-        oplot, [qpq_strct[a].R_phys], [qpq_strct[a].z_Lya], color=vclr, psym=8
-        ;; Outliers
-        ;if (abs(vrel[a]) GE 1000) and FILL then print, NHI_qso[a], NHI_zfg[a], vrel[a]
-     endfor
-     ;; Label
+  if not keyword_set(NOZFG) then begin
+     yrng = [1.5, 3.5]
+     ytit='z!dfg!N'
+     axis, yaxis = 1, color = lclr, charsi = csz, yrang = yrng, $
+           ysty = 1, ytit =ytit,  /save
+     
+     ;; May need to expand beyond Lya, e.g. to include MgII
+     gd = where(qpq_strct.flg_EWLya GT 0, ngd)
+     qpq_strct = qpq_strct[gd]
+     
+     ;; Loop on velocity offset
+     vmnx = [ [-10000.,-1000], $
+              [-1000, -400], $
+              [-400, 400], $
+              [400, 1000], $
+              [1000, 10000] ]
+     v_clrs = [clr.blue, clr.green, clr.black, clr.orange, clr.red]
+     ;; JFH Hack for talk
+     v_clrs = [clr.black, clr.black, clr.black, clr.black, clr.black]
+     vrel = x_relvel(qpq_strct.z_Lya, qpq_strct.z_fg, /rev)
+     
+     xlbl = 210.
+     ylbl = yrng[1]-1.
+     yoff = 1.3
+     for ii=0L,n_elements(v_clrs)-1 do begin
+        ;; Any?
+        idx = where(vrel GT vmnx[0, ii] and vrel LE vmnx[1,ii], na)
+        for jj=0L,na-1 do begin
+           a = idx[jj]
+           if qpq_strct[a].flg_OThick EQ 1 then FILL = 1 else FILL = 0
+           if qpq_strct[a].flg_OThick LT 0 then vclr = clr.darkgray else vclr =lclr
+           plotsym, 0, 0.7, FILL=fill, thick=3
+           oplot, [qpq_strct[a].R_phys], [qpq_strct[a].z_Lya], color=vclr, psym=8
+           ;; Outliers
+                                ;if (abs(vrel[a]) GE 1000) and FILL then print, NHI_qso[a], NHI_zfg[a], vrel[a]
+        endfor
+        ;; Label
 ;     xyouts, xlbl, ylbl-yoff*ii, strtrim(round(vmnx[0,ii]),2)+'< !9d!Xv < '+$
 ;             strtrim(round(vmnx[1,ii]),2), color=v_clrs[ii], charsiz=lsz
-  endfor
+     endfor
+  endif
 
 
   ;; Close Ps
