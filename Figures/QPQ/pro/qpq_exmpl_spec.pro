@@ -29,7 +29,7 @@ pro qpq_exmpl_spec
   qsodir = getenv('QSO_DIR')
 
   ;; Read in pair structure
-  qpq_fil = '~/Dropbox/QSOPairs/qpq6_pairs.fits'
+  qpq_fil = '~/Dropbox/QSOPairs/qpq6_final_cut.fits'
   qpq_strct = xmrdfits(qpq_fil, 1)
 
   gdp = where(qpq_strct.R_phys LT 300. AND $
@@ -44,11 +44,12 @@ pro qpq_exmpl_spec
   fg_qsos = ['BOSSJ0021-0252', $, ;; BOSS
              'SDSSJ0028-1049', $ ;; ESI
              'SDSSJ0034-1050', $ ;; LRISb
-             'APOJ0814+3250', $ ;; GMOS
-             'APOJ0853-0011' ]   ;;  MagE
-  ymx = [8., 0.6, 12, 17, 5]
-  lflg = [0, 0, 1, 1, 0]  ;; 0=left, 1=right
-  apos = [5.5, 0.3, 4.5, 13,  2.0]
+             'SDSSJ0837+3630', $ ;; MODS
+             'APOJ0853-0011' , $   ;;  MagE
+             'BOSSJ1149+0346']  ;; GMOS
+  ymx = [8., 0.6, 12, 20, 5, 8]
+  lflg = [0, 0, 1, 1, 0,0]  ;; 0=left, 1=right
+  apos = [5.5, 0.3, 4.5, 13,  2.0, 3.0]
   nplt = n_elements(fg_qsos)
 
   npx = 1
