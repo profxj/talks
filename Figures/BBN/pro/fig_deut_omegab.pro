@@ -1,7 +1,7 @@
 ;; Shows Best estimates of D/H and thereby Omega b
 pro fig_deut_omegab
 
-  if not keyword_set(CSZ) then csz = 2.1
+  if not keyword_set(CSZ) then csz = 1.7
   if not keyword_set(lSZ) then lsz = 1.8
   if not keyword_set(lSZ2) then lsz2 = 1.5
 
