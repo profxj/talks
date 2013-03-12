@@ -31,7 +31,7 @@ pro fig_make_forest
   N1 = 13.5
   lya.b = 30.
   ytit = 'Relative Intensity'
-  xtit = 'Rest Wavelength (Ang)'
+  xtit = 'Wavelength (Ang)'
 
   for qq=0,4 do begin
 
