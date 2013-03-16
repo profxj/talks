@@ -63,8 +63,8 @@ pro fig_q1009, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
   if not keyword_set( LSIZE ) then lsize = 1.8
   if not keyword_set( LTHICK ) then lthick = 6.
   if not keyword_set( BLSZ ) then blsz = 1.4
-  if not keyword_set( CSIZE ) then csize = 2.2
-  if not keyword_set( CSZ2 ) then csz2 = 1.7
+  if not keyword_set( CSIZE ) then csize = 1.7
+  if not keyword_set( CSZ2 ) then csz2 = 1.4
 
 ;  if not keyword_set( PSFIL ) then psfil = 'tmp.ps'
 
@@ -91,7 +91,7 @@ pro fig_q1009, datfil, NTOT=NTOT, CSIZE=csize, PSFILE=psfile, XTINT=xtint, $
   xr = [4256.5, 4263]
   plot, wave[pmn:pmx], fx[pmn:pmx], xrange=xr, $
         yrange=[-0.05,1.1], xtickn=xspaces, xmargin=[10,30], $
-        ymargin=[10,10], xtitl='Wavelength (Ang)', ytit='Normalized Flux', $
+        ymargin=[10,14], xtitl='Wavelength (Ang)', ytit='Normalized Flux', $
         charsize=csz2, psym=10, background=clr.white, color=clr.black, $
         xstyle=1, ystyle=1, thick=1, ytickinterval=ytint, $
         /nodata

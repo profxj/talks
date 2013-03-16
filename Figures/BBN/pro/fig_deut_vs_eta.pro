@@ -13,7 +13,7 @@ pro fig_deut_vs_eta
   xmrg = [7,17]
   ymrg = [10,6]
   yrng=[1e-6, 1e-2]
-  xrng=[0.5, 20]
+  xrng=[0.5, 30]
 
   ytit = 'D/H'
   xtit = '!9h!X!d10!N'
