@@ -3,7 +3,7 @@
 ; fuse_velplt
 ;  V1.1
 ;------------------------------------------------------------------------------
-pro qpq5_ew1334, wrest, FOREST = forest, NOPS = nops, CSZ = csz, NOLBG = nolbg, LSZ = lsz, xlbl = xlbl, XMRG = xmrg, LBLX = LBLX
+pro qpq5_ew1334, wrest, FOREST = forest, NOPS = nops, CSZ = csz, NOLBG = nolbg, LSZ = lsz, xlbl = xlbl, XMRG = xmrg, LBLX = LBLX, PLOT_LBG=plot_lbg
 
   if not keyword_set( LSZ ) then lsz = 1.8
   if not keyword_set( LTHICK ) then lthick = 4.
@@ -29,6 +29,7 @@ pro qpq5_ew1334, wrest, FOREST = forest, NOPS = nops, CSZ = csz, NOLBG = nolbg, 
   fwr = fix(wrest)
   cfwr = strtrim(fix(wrest),2)
   if not keyword_set(PSFILE) then psfile = 'qpq5_ew1334.ps'
+  if keyword_set(PLOT_LBG) then psfile = 'qpq5_ew1334_lbg.ps'
 
 
   ;; Plot
@@ -49,7 +50,7 @@ pro qpq5_ew1334, wrest, FOREST = forest, NOPS = nops, CSZ = csz, NOLBG = nolbg, 
      ENDIF
   endelse
   clr = getcolor(/load)
-  lbgc = clr.darkgreen
+  lbgc = clr.yellow
   fclr = clr.white
   pclr = clr.cyan
 

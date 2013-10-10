@@ -47,6 +47,7 @@ pro qpq7_ew1548_vs_rho, wrest, FOREST=forest
   clr = getcolor(/load)
   lbgc = clr.red
   fclr = clr.white
+  ;fclr = clr.lightgray
 
 
   ;; ;;;;;;;;;;;;;;;;;;

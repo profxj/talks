@@ -3,10 +3,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Plots OThick absorbers
 pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=nops, $
-                  CSZ=csz, XMRG=xmrg, NOZFG=nozfg, NEIL_LBG=neil_lbg
+                  CSZ=csz, XMRG=xmrg, NOZFG=nozfg, NEIL_LBG=neil_lbg, $
+                   ONWHITE=onwhite, NO_LBG=no_lbg
 
   ;; Get structure if necessary
   if not keyword_set( PSFILE ) then psfile = 'qpq5_covering.ps'
+  if keyword_set(ONWHITE) then psfile = 'qpq5_covering_onwhite.ps'
   if not keyword_set( CSZ ) then csz = 1.9
   if not keyword_set( LSZ ) then lsz = 1.9
 
@@ -24,14 +26,17 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
 
   COVFACT = 1
 
+  thisletter = byte(94)
+  perpletter = '!9' + string(thisletter) + '!X'
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; PLOT
   if not keyword_set(NOPS) then begin 
      x_psopen, psfile, /maxs
      !p.multi=[0,1,1]
-     xmrg = [7,8]
+     xmrg = [7,18]
      ymrg = [4.0,0.5]
-     xtit='R!dperp!N (kpc)'
+     xtit='R!d'+perpletter+'!N (kpc)'
   endif else begin
      if not keyword_set(XMRG) then xmrg = [7,6]
      ymrg = [0., 0]
@@ -41,6 +46,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
   clr = getcolor(/load)
   ;lclr = clr.lightgray
   lclr = clr.white
+  if keyword_set(ONWHITE) then lclr=clr.black
 
   ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Covering fraction
@@ -48,7 +54,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
   xrng = [-10., 310]
   yrng = [0., 1.05]
 
-  ytit = 'Covering Fraction'
+  ytit = 'Covering of Optically Thick Gas'
   plot, [0], [0], color=lclr, background=clr.white, charsize=csz,$
         xmargin=xmrg, ymargin=ymrg, xtitle=xtit, $
         ytitle=ytit, yrange=yrng, thick=4, xtickn=xspaces, $
@@ -58,6 +64,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
   ;if keyword_set(NOPS) then xyouts, 01., 0.9, '(a)', color=lclr, charsi=lsz
 
   eclr = clr.yellow
+  if keyword_set(ONWHITE) then eclr=clr.blue
   binsz = 50.
 
   ;; Loop on Radii
@@ -80,8 +87,9 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
      oploterror, [xbin], [cov_frac], [abs(xbin-x2)], [(abs(cov_frac - npoiss[0]/float(npts))) < (1.-cov_frac)], $
                  psym = 8, errcolor = eclr, errthick = 5, /hibar, color = eclr
 
-     plotsym, 2, 3.7, thick=5
-     oplot, [xbin], [cov_frac], psym=8, color=eclr
+     ;; Arrows
+     ;plotsym, 2, 3.7, thick=5
+     ;oplot, [xbin], [cov_frac], psym=8, color=eclr
      
      ;; ;;;;;;;;;;;;;;;
      ;; Random IGM 
@@ -102,20 +110,22 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
      oploterror, [xbin], [NLLS/float(npts)], 0.2*[NLLS/float(npts)], errcol=clr.cyan
   endfor
   
-  xyouts, 200., 0.95, 'Optically Thick Gas', color=clr.yellow, charsi=lsz
+  ;xyouts, 200., 0.95, 'Optically Thick Gas', color=eclr, charsi=lsz
 
-  lbgc = clr.red
-  if not keyword_set(NEIL_LBG) then begin
-     ;; Add Rudie et al. 2012 :: r<R_vir = 30 +/- 14%
-     oploterror, [75.], [0.3], [25.], [0.14], color=lbgc, errcol=lbgc
-     plotsym, 3, 1.7, /fill
-     oplot, [75.], [0.3], color=lbgc, psym=8
-  endif else begin
-     readcol, 'neil_lbg.dat', x0, x1, cflo, cf, cfhi
-     meanx = (x0+x1) / 2.
-     oploterror, meanx, cf, [meanx-x0], [cf-cflo], errcol=lbgc, color=lbgc, /lobar, psym=1
-     oploterror, meanx, cf, [x1-meanx], [cfhi-cf], errcol=lbgc, color=lbgc, /hibar, psym=1
-  endelse
+  if not keyword_set(NO_LBG) then begin
+     lbgc = clr.red
+     if not keyword_set(NEIL_LBG) then begin
+        ;; Add Rudie et al. 2012 :: r<R_vir = 30 +/- 14%
+        oploterror, [75.], [0.3], [25.], [0.14], color=lbgc, errcol=lbgc
+        plotsym, 3, 1.7, /fill
+        oplot, [75.], [0.3], color=lbgc, psym=8
+     endif else begin
+        readcol, 'neil_lbg.dat', x0, x1, cflo, cf, cfhi
+        meanx = (x0+x1) / 2.
+        oploterror, meanx, cf, [meanx-x0], [cf-cflo], errcol=lbgc, color=lbgc, /lobar, psym=1
+        oploterror, meanx, cf, [x1-meanx], [cfhi-cf], errcol=lbgc, color=lbgc, /hibar, psym=1
+     endelse
+  endif
 
   ;; Stats to R=200kpc
   gdi = where(qpq_strct.R_phys LT 200., npts)
@@ -138,7 +148,6 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
               [-400, 400], $
               [400, 1000], $
               [1000, 10000] ]
-     v_clrs = [clr.blue, clr.green, clr.black, clr.orange, clr.red]
      ;; JFH Hack for talk
      v_clrs = [clr.black, clr.black, clr.black, clr.black, clr.black]
      vrel = x_relvel(qpq_strct.z_Lya, qpq_strct.z_fg, /rev)
@@ -154,7 +163,7 @@ pro qpq5_covering, COVFACT = COVFACT, psfile = psfile, outfile = outfile, NOPS=n
            if qpq_strct[a].flg_OThick EQ 1 then FILL = 1 else FILL = 0
            if qpq_strct[a].flg_OThick LT 0 then vclr = clr.darkgray else vclr =lclr
            plotsym, 0, 0.7, FILL=fill, thick=3
-           oplot, [qpq_strct[a].R_phys], [qpq_strct[a].z_Lya], color=vclr, psym=8
+           ;oplot, [qpq_strct[a].R_phys], [qpq_strct[a].z_Lya], color=vclr, psym=8
            ;; Outliers
                                 ;if (abs(vrel[a]) GE 1000) and FILL then print, NHI_qso[a], NHI_zfg[a], vrel[a]
         endfor
