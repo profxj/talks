@@ -2,12 +2,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Plots Average/Median EW_Lya vs Physical/Comoving Mpc
-pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
+;; qpq6_vs_lbg
+;; qpq6_vs_lbg, /no_lbg
+;; qpq6_vs_lbg, /z0
+pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct, $
+                 z0=z0, NO_LBG=no_lbg
 
   compile_opt strictarr
 
   ;; Get structure if necessary
   if not keyword_set( PSFILE ) then psfile = 'qpq6_vs_lbg.ps'
+  if keyword_set( z0 ) then psfile = 'qpq6_vs_lbg_z0.ps'
+  if keyword_set( NO_LBG ) then psfile = 'qpq6_vs_lbg_nolbg.ps'
   if not keyword_set( CSZ ) then csz = 2.2
   if not keyword_set( LSZ ) then lsz = 1.9
   if not keyword_set( ASZ ) then asz = 2.0
@@ -24,6 +30,10 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
 
   cd, getenv('QSO_DIR')+'tex/QPQ6/Figures/pro/', curr=curr
   resolve_routine, 'fig_ewstack_vs_rho', /compile_full_file 
+  cd, curr
+
+  cd, getenv('QSO_DIR')+'tex/QPQ5/Figures/pro/', curr=curr
+  resolve_routine, 'fig_boot_stack', /compile_full_file
   cd, curr
 
 
@@ -48,10 +58,14 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
   clr = getcolor(/load)
   !p.multi=[0,1,1]
 
+  fclr = clr.lightgray
+
   qclr = clr.white
+  ;qclr = clr.lightgray
   lclr = clr.cyan
+  cclr = clr.yellow
   
-  xmrg = [7,15]
+  xmrg = [7,3]
   ymrg = [5,1]
 
   xrng = [10., 1000.]  ; kpc
@@ -91,7 +105,7 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
      endcase
      
      
-     plot, [0], [0], color=clr.white, background=clr.white, charsize=csz,$
+     plot, [0], [0], color=fclr, background=clr.white, charsize=csz,$
            xmargin=xmrg, ymargin=ymrg, xtitle=xtit, xtickn=xspaces, $
            ytitle=ytit, yrange=yrng, thick=4, $
            xrange=xrng, ystyle=1, xstyle=1, psym=1, /nodata, /xlog
@@ -106,9 +120,11 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
         ;scl = 1.5
         scl = 0.34
         ;xyouts, xsmpl, ysmpl/(scl^1), 'z~0; Dwarf', color=clr.red, charsi=lsz
-        xyouts, xsmpl, ysmpl-(0*scl), 'z~2; QSO', color=qclr, charsi=lsz, align=0.
-        xyouts, xsmpl, ysmpl-(1*scl), 'z~2; LBG', color=lclr, charsi=lsz, align=0.
-        ;xyouts, xsmpl, ysmpl-(2*scl), 'z~0; L*', color=clr.blue, charsi=lsz, align=0.
+        xyouts, xsmpl, ysmpl-(0*scl), 'z~2; QPQ', color=qclr, charsi=lsz, align=0.
+        if not keyword_set(NO_LBG) then $
+           xyouts, xsmpl, ysmpl-(1*scl), 'z~2; LBG', color=lclr, charsi=lsz, align=0.
+        if keyword_set(Z0) then $
+           xyouts, xsmpl, ysmpl-(2*scl), 'z~0; L*', color=cclr, charsi=lsz, align=0.
         ;xyouts, xsmpl, ysmpl/(scl^0), 'z~2; QSO', color=clr.black, charsi=lsz, align=0.
         ;xyouts, xsmpl, ysmpl/(scl^1), 'z~2; LBG', color=clr.red, charsi=lsz, align=0.
         ;xyouts, xsmpl, ysmpl/(scl^2), 'z~0; L*', color=clr.blue, charsi=lsz, align=0.
@@ -122,7 +138,7 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
      ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; z~0 L*
      if keyword_set(z0) then begin
-        pclr = clr.blue
+        pclr = cclr
         
         ;; Initialize
         cd, getenv('PCOSHALOS')+'Analysis/pro/', curr=curr
@@ -177,9 +193,9 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
         ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; LCO Survey
         if fix(wrest[ss]) EQ 1215 then begin
-           lco_bins = [ [150., 300]] ;, [300, 500], [500., 1000]] ; kpc
-                                ;sz_lco = size(lco_bins, /dimen)
-           sz_lco = [2,1]
+           lco_bins = [ [150., 300], [300, 500], [500., 1000]] ; kpc
+           sz_lco = size(lco_bins, /dimen)
+           ;sz_lco = [2,1]
            
            summ_fil = getenv('POVI')+'/Galaxies/Analysis/lstar_galabs_1Mpc_strct.fits'
            struct = xmrdfits(summ_fil,1)
@@ -226,6 +242,7 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
      ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; LBG
+     if not keyword_set(NO_LBG) then begin
      pclr = lclr
      s10_Rperp = [31., 63, 103] ; kpc
      case fix(wrest[ss]) of 
@@ -283,19 +300,31 @@ pro qpq6_vs_lbg, NO_LINE=no_line, FSTRCT=fstrct
         oploterror, R_LBG, EW_LBG, [sigEW_high-EW_LBG], color=pclr, errcol=pclr, /hibar, psym=8
         oploterror, R_LBG, EW_LBG, [EW_LBG-sigEW_low], color=pclr, errcol=pclr, /lobar, psym=8
      endif else oploterror, R_LBG, EW_LBG, sigEW_LBG, color=pclr, errcol=pclr, psym=8
+  endif
 
      ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; QSOs
      pclr = qclr
-     if not keyword_set(FSTRCT) then begin
-        fig_ewstack_vs_rho, FSTRCT=qpq_str, /NOPS
-        fstrct = qpq_str
-     endif else qpq_str = fstrct
-        ;;
-     R_QSO = qpq_str.Rval 
-     EW_QSO = qpq_str.EWval
-     sigEW_QSO = qpq_str.sigEW
+     ;; Outer values
+     fig_ewstack_vs_rho, FSTRCT=qpq_str, /NOPS
+     fstrct = qpq_str
+     ;; Inner values
+     fig_boot_stack, /noplot, EW_vals=ew_vals
+     ;; Synthesize
+     idx1 = [1,2]
+     R_QSO = reform(EW_vals[2,idx1],2)
+     EW_QSO = reform(EW_vals[0,idx1],2)
+     sigEW_QSO = reform(EW_vals[1,idx1],2)
+
+     idx2 = [2,3]
+     dum1 = (qpq_str.Rval)[idx2]
+     dum2 =  (qpq_str.EWval)[idx2]
+     dum3 =  (qpq_str.sigEW)[idx2]
+
+     R_QSO = [R_QSO, dum1]
+     EW_QSO = [EW_QSO, dum2]
+     sigEW_QSO = [sigEW_QSO, dum3]
 
      ;; Plot
      plotsym, 0, syms, /fill
