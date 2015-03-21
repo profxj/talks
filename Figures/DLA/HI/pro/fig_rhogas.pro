@@ -2,7 +2,8 @@
 pro fig_rhogas, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, PLTRAO=pltrao, $
                  TOTON=toton, NOPRX=noprx, NO_PS=no_ps, $
                 MODELS=models, STRCT=strct, BINS=bins, LBLSZ=lblsz, $
-                CSZ=csz, XRNG=xrng, z0=z0, NDAEME=ndaeme
+                CSZ=csz, XRNG=xrng, z0=z0, NDAEME=ndaeme, $
+                DRK=drk
 
   ;; Get structure if necessary
   if not keyword_set( GZFIL ) then gzfil = '~/SDSS/DR5_QSO/dr5_dlagz_s2n4.fits'
@@ -20,7 +21,13 @@ pro fig_rhogas, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, PLTRAO=pltrao, $
   ;; PLOT
   if keyword_set( PSFILE ) then x_psopen, psfile, /maxs
   clr = getcolor(/load)
-  lclr = clr.white
+  if keyword_set(DRK) then begin
+     lclr = clr.white
+     zclr = clr.yellow
+  endif
+     lclr = clr.black
+     zclr = x_fsc_color('blu5')
+  endelse
 
   if keyword_set(NO_PS) then begin
       xspaces = replicate(' ',30) 
@@ -60,10 +67,10 @@ pro fig_rhogas, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, PLTRAO=pltrao, $
   sig_rhoHI = sigHI * NCST
 
   x_curvefill, [0., 10.], replicate(rhoHI+sig_rhoHI,2), $
-               replicate(rhoHI-sig_rhoHI,2), color=clr.yellow, /line_fill, $
+               replicate(rhoHI-sig_rhoHI,2), color=zclr, /line_fill, $
                orientation=45.
   lsz= 2.4
-  xyouts, 4.6, 0.6, 'z=0', color=clr.yellow, charsi=lsz
+  xyouts, 4.6, 0.6, 'z=0', color=zclr, charsi=lsz
 
 
   ;; DR5

@@ -3,7 +3,7 @@ pro fig_dla_comparefn, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, ZBIN=zbin, $
                 STRCT=strct, GZSTR=gzstr, NOPLT=noplt, PRX=prx, $
                 NPLT=nplt, stp=stp, SUBR=subr, NODBL=nodbl, TIFFF=tifff, $
                 OUTFIL=outfil, NMAX=nmax, NO_PS=no_ps, CSZ=csz, LBLSZ=lblsz,$
-                NMIN=nmin, NORAO=norao
+                NMIN=nmin, NORAO=norao, DRK=drk
 
   ;; Get structure if necessary
   if not keyword_set( PSFILE ) then psfile = 'fig_dla_compare_fn.ps'
@@ -44,7 +44,12 @@ pro fig_dla_comparefn, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, ZBIN=zbin, $
   ymrg = [4.5,1]
 
   clr = getcolor(/load)
-  lclr = clr.white
+
+  if keyword_set(DRK) then begin
+     lclr = clr.white
+  endif else begin
+     lclr = clr.black
+  endelse
 
   plot, [0], [0], color=lclr, background=clr.white, charsize=csz,$
         xmargin=xmrg, ymargin=ymrg, xtitle='log N!dHI!N', $
@@ -66,7 +71,11 @@ pro fig_dla_comparefn, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, ZBIN=zbin, $
       endfor
       ;; Plot
       psty = (qq MOD 4) + 1
-      if qq GT 3 then pclr = clr.tomato else pclr=clr.yellow
+      if keyword_set(DRK) then begin
+         if qq GT 3 then pclr = clr.tomato else pclr=clr.yellow
+      endif else begin
+         if qq GT 3 then pclr = x_fsc_color('blu5') else pclr=x_fsc_color('red5')
+      endelse
       oplot, nval, 1.-cumu, color=pclr, psym=10, linesty=psty, thick=5
       ;; KS Test
       if nsub GT 4 then begin
@@ -122,9 +131,13 @@ pro fig_dla_comparefn, PSFILE=psfile, GZFIL=gzfil, DLALST=dlalst, ZBIN=zbin, $
            - igamma(A,10.d^(20.3 - log_NHIstar), /doubl) ) / $
          ( 1 - igamma(A,10.d^(20.3-log_NHIstar)) )
   nbin = nbin+1
-  oplot, Nval, 1.-cumu, color=clr.cyan, psym=10, thick=7
-  oplot, [21.25, 21.35], y1-[stp,stp]*nbin, color=clr.cyan
-  xyouts, 21.4, y1-stp*nbin-off, 'z=0', color=clr.cyan, charsize=lblsz
+  if keyword_set(DRK) then $
+     zclr = clr.cyan else $
+        zclr = x_fsc_color('grn5')
+
+  oplot, Nval, 1.-cumu, color=zclr, psym=10, thick=7
+  oplot, [21.25, 21.35], y1-[stp,stp]*nbin, color=zclr
+  xyouts, 21.4, y1-stp*nbin-off, 'z=0', color=zclr, charsize=lblsz
 
   
   ;; Close Ps
