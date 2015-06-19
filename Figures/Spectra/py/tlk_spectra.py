@@ -193,8 +193,12 @@ def fig_cog_abs_web(outfil=None, vmnx=None):
         ax0.set_xlim(EWmnx.value)
         ax0.set_ylim(Nmnx)
         ax0.set_ylabel(r'$N_{\rm HI}$:   HI Column Density')
-        ax0.set_xlabel(r'Equivalent Width ($\AA$)')
+        ax0.set_xlabel(r'Ly$\alpha$ Equivalent Width ($\AA$)')
         ax0.plot(aEW, 10.**aNval, 'k')
+
+        ax0.text(0.002, 10.**21, 'Curve of Growth', color='black',
+            size=17.)
+       #  
  
        # Fonts
         xputils.set_fontsize(ax0,15.)
