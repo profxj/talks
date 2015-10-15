@@ -16,9 +16,11 @@ from astropy import units as u
 from astropy import constants as const
 
 from linetools.lists import linelist as lll
+from linetools.spectra import io as lsio
 
 from xastropy.plotting import simple as xpsimp
 from xastropy.cgm.cos_halos import COSHalos
+from xastropy.abund import solar as xsolar
 from xastropy.spec.lines_utils import AbsLine
 from xastropy.obs import finder
 from xastropy.plotting import utils as xputils
@@ -43,13 +45,56 @@ def fig_experiment(outfil=None):
     # Finder (out of order to avoid PDF issues)
     #finder.main([cgm_abs.name, cgm_abs.galaxy.coord], imsize=2.*u.arcmin, show_circ=False)
 
+    lclr = 'blue'
+
     # Start the plot
     if outfil is None:
         outfil='fig_experiment.pdf'
     pp = PdfPages(outfil)
 
+    # Full QSO spectrum
+    spec_fil = os.getenv('DROPBOX_DIR')+'/COS-Halos/Targets/J0950+4831/Data/J0950+4831_nbin6_coadd.fits'
+    spec = lsio.readspec(spec_fil)
+    xmnx = (1135., 1750.)
+    ymnx = (-0.0002, 0.0106)
+    for ss in range(2):
+        plt.figure(figsize=(8, 5))
+        plt.clf()
+        gs = gridspec.GridSpec(1, 1)
+
+        # Axes
+        ax = plt.subplot(gs[0,0])
+        #ax.xaxis.set_minor_locator(plt.MultipleLocator(0.5))
+        #ax.xaxis.set_major_locator(plt.MultipleLocator(1.))
+        #ax.get_xaxis().get_major_formatter().set_useOffset(False)
+        ax.set_xlim(1135., 1750.)
+        ax.set_ylim(-0.0002, 0.0106)
+        ax.set_ylabel('Relative Flux')
+        ax.set_xlabel(r'Wavelength ($\AA$)')
+
+        # Zero line
+        ax.plot(xmnx, (0.,0.), 'g--')
+
+        # Data
+        ax.plot(spec.dispersion, spec.flux, 'k')
+        ax.plot(spec.dispersion, spec.sig, 'r:')
+
+        if ss > 0:
+            ax.fill_between( [1455., 1490.], [ymnx[0]]*2, [ymnx[1]]*2, color='blue', alpha=0.3)
+        # Label
+        ax.text(1500., 0.008, cgm_abs.field, ha='left', fontsize=21., color=lclr)
+
+        # Fonts
+        xputils.set_fontsize(ax,17.)
+
+        # Write
+        plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+        pp.savefig()
+        plt.close()
+
+
+
     # Lya spec
-    lclr = 'blue'
     for ss in range(3):
 
         plt.figure(figsize=(8, 5))
@@ -229,23 +274,22 @@ def fig_images(outfil=None):
 
     # Start the plot
     if outfil is None:
-        outfil='fig_images.pdf'
+        outfil='fig_coshalo_images.pdf'
     pp = PdfPages(outfil)
 
     dx = 0.2
     dy = 0.55
     imsize = 1.2
 
-    #for ss in range(5):
-    for ss in range(1):
+    for ss in range(5):
         fig = plt.figure(figsize=(8, 5))
         fig.clf()
         # Setup for dark
-        xpsimp.dark_bkgd(fig)
+        xpsimp.dark_bkgd(plt)
         gs = gridspec.GridSpec(1, 1)
 
         # Axes
-        ax = fig.subplot(gs[0,0])
+        ax = plt.subplot(gs[0,0])
         ax.set_xlim(9.4, 11.7) 
         #ax.xaxis.set_major_locator(plt.MultipleLocator(300.))
         ax.set_ylim(-13,-9)
@@ -296,18 +340,23 @@ def fig_images(outfil=None):
         # Write
         fig.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
         pp.savefig()
-        fig.close()
+        plt.close()
 
     # Finish
     print('tlk_coshalos: Wrote {:s}'.format(outfil))
     pp.close()
 
 def fig_abs_gallery(wrest=None, lbl=None, outfil=None, 
-    cos_halos=None, passback=False):
+    cos_halos=None, passback=False, axes_flg=0):
     # import tlk_coshalos as tch
     # reload(tch)
     # cos_halos = tch.fig_abs_gallery(passback=True)
     '''Gallery of absorption lines
+    Default is M* vs. sSFR
+      But you can do rho vs. M* too
+    axes_flg: int, optional
+      0: M* vs. sSFR
+      1: rho vs. M*
     '''
     # Linelist
     llist = lll.LineList('Strong')
@@ -325,19 +374,27 @@ def fig_abs_gallery(wrest=None, lbl=None, outfil=None,
         if passback:
             return cos_halos
 
-    xmnx = (9.4, 11.7) 
-    ymnx = (-13., -9.)
-    vmnx = (-600., 600.)
+    if axes_flg == 0:
+        xmnx = (9.4, 11.7) 
+        ymnx = (-13., -9.)
+    elif axes_flg == 1:
+        ymnx = (9.4, 11.7) # log Msun
+        xmnx = (15., 163) # kpc
+    vmnx = (-600., 600.) # km/s
     wbox= {'facecolor':'white', 'edgecolor':'white'}
     lclr = 'blue'
     # To help with looping
     def sngl_abs(ax,field_gal,wbox=wbox,lclr=lclr,vmnx=vmnx,
         xmnx=xmnx,ymnx=ymnx,cos_halos=cos_halos, show_xylbl=True,
-        srect=0.2, show_ewlbl=True):
+        srect=0.2, show_ewlbl=True, lw=1.3, axes_flg=axes_flg):
         #
         cgm_abs = cos_halos[field_gal]
-        xplt = cgm_abs.galaxy.stellar_mass
-        yplt = np.log10(cgm_abs.galaxy.sfr[1])-cgm_abs.galaxy.stellar_mass
+        if axes_flg == 0:
+            xplt = cgm_abs.galaxy.stellar_mass
+            yplt = np.log10(cgm_abs.galaxy.sfr[1])-cgm_abs.galaxy.stellar_mass
+        elif axes_flg == 1:
+            yplt = cgm_abs.galaxy.stellar_mass
+            xplt = cgm_abs.rho.value
         # Spec
         spec = cos_halos.load_bg_cos_spec(field_gal, wrest)
         velo = spec.relative_vel(wrest*(cgm_abs.galaxy.z+1))
@@ -367,7 +424,7 @@ def fig_abs_gallery(wrest=None, lbl=None, outfil=None,
             axsp.set_xlabel('Relative Velocity (km/s)',fontsize=9.)
             axsp.set_ylabel('Normalized Flux',fontsize=9.)
         # Plot
-        axsp.plot(velo, spec.flux, sclr, drawstyle='steps', lw=1.3)
+        axsp.plot(velo, spec.flux, sclr, drawstyle='steps', lw=lw)
         # Label
         #llbl = (r'$W_\lambda = $'+'{:0.2f} A \n'.format(EW.value)+
         #    '$z=${:.3f}\n'.format(cgm_abs.galaxy.z)+
@@ -380,8 +437,12 @@ def fig_abs_gallery(wrest=None, lbl=None, outfil=None,
     # Start the plot
     pp = PdfPages(outfil)
 
+    if axes_flg == 0:
+        loop = range(4)
+    else:
+        loop = range(3,4)
 
-    for ss in range(4):
+    for ss in loop:
         plt.figure(figsize=(8, 5))
         plt.clf()
         gs = gridspec.GridSpec(1, 1)
@@ -390,9 +451,14 @@ def fig_abs_gallery(wrest=None, lbl=None, outfil=None,
         ax = plt.subplot(gs[0,0])
         ax.set_xlim(xmnx)
         ax.set_ylim(ymnx)
-        ax.set_ylabel('sSFR')
-        ax.set_xlabel('log M*')
-        ax.text(9.75, -12., lbl, color=lclr, fontsize=21.)
+        if axes_flg == 0:
+            ax.set_ylabel('sSFR')
+            ax.set_xlabel('log M*')
+            ax.text(9.75, -12., lbl, color=lclr, fontsize=21.)
+        elif axes_flg == 1:
+            ax.set_ylabel('log M*')
+            ax.set_xlabel('Impact Parameter (kpc)')
+            ax.text(40., 11.5, lbl, color=lclr, fontsize=21.)
         #ax.xaxis.set_major_locator(plt.MultipleLocator(300.))
 
         # 
@@ -411,7 +477,7 @@ def fig_abs_gallery(wrest=None, lbl=None, outfil=None,
             for cgm_abs in cos_halos.cgm_abs[0:iend]:
                 field_gal = (cgm_abs.field, cgm_abs.gal_id)
                 sngl_abs(ax,field_gal,show_xylbl=False,srect=0.1,
-                    show_ewlbl=False)
+                    show_ewlbl=False, lw=0.5)
         else:
             pass
 
@@ -445,9 +511,10 @@ def main(flg_fig):
     if (flg_fig % 2**2) >= 2**1:
         fig_images()
 
-    # Abs gallery
+    # Abs gallery for HI
     if (flg_fig % 2**3) >= 2**2:
         fig_abs_gallery()
+        fig_abs_gallery(axes_flg=1,outfil='fig_HI_gallery_rho.pdf')
 
 
 # Command line execution
@@ -455,8 +522,8 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
-        #flg_fig += 2**0 # Experiment
-        flg_fig += 2**1 # Image gallery
+        flg_fig += 2**0 # Experiment
+        #flg_fig += 2**1 # Image gallery
         #flg_fig += 2**2 # Abs gallery
     else:
         flg_fig = sys.argv[1]
