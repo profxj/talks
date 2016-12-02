@@ -15,8 +15,10 @@ pro lpe_he0940, REST=rest, ZOOM=zoom
   x_psopen, psfil, /maxs
   !p.multi = [0,1,1]
   clr = getcolor(/load)
-  pclr = clr.white
+  ;pclr = clr.white
   ;pclr = clr.lightgray
+  pclr = clr.black
+  bclr = clr.black
 
   xmrg = [7,7]
   ymrg = [9,3]
@@ -28,7 +30,7 @@ pro lpe_he0940, REST=rest, ZOOM=zoom
   xtit = 'Observed Wavelength (Ang)'
 
   ;; Plot
-  plot, [0], [0], color=pclr, background=clr.white, charsize=csz,$
+  plot, [0], [0], color=pclr, charsize=csz, $;background=bclr, $
         xmargin=xmrg, ymargin=ymrg, ytitle=ytit, $
         xtitle=xtit, yrange=yrng, thick=5, ytickinter=5.0, $
         xrange=xrng, ystyle=1, xstyle=9, psym=1, /nodata ;, xtickint=1.
@@ -36,7 +38,7 @@ pro lpe_he0940, REST=rest, ZOOM=zoom
   oplot, wv, fx, color=pclr, psym=10, thick=2
   oplot, xrng, replicate(yrng[1]*0.999,2), color=pclr, thick=7
 
-  lclr = clr.cyan
+  lclr = clr.blue
   xyouts, xplt, 3.0, 'HE0940-1050', color=lclr, charsi=lsz, align=0.
   xyouts, xplt+10, 1.7, 'z=3.076', color=lclr, charsi=lsz, align=0.
 
