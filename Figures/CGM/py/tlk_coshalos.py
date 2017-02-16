@@ -2,8 +2,10 @@
 # Imports
 from __future__ import print_function
 
+
 import numpy as np
 import glob, os, sys
+import pdb
 
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'stixgeneral'
@@ -11,7 +13,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
-from astropy.io import ascii
 from astropy import units as u
 from astropy import constants as const
 
@@ -19,17 +20,70 @@ from linetools.lists import linelist as lll
 from linetools.spectra import io as lsio
 
 from xastropy.plotting import simple as xpsimp
-from xastropy.cgm.cos_halos import COSHalos
-from xastropy.abund import solar as xsolar
-from xastropy.spec.lines_utils import AbsLine
-from xastropy.obs import finder
+from pyigm.cgm.cos_halos import COSHalos
 from xastropy.plotting import utils as xputils
-from xastropy.xutils import xdebug as xdb
 
 # Local
 #sys.path.append(os.path.abspath("../Analysis/py"))
 #import lls_sample as lls_s
 
+def fig_lya(inp=('J1555+3628', '88_11'), outfil='fig_j1555_lya.png'):
+    # Init COS-Halos sightline
+    cos_halos = COSHalos()
+    #cos_halos.load_single( ('J0950+4831','177_27'))
+    cgm_abs = cos_halos[inp]
+
+    # ########################################
+    # Finder (out of order to avoid PDF issues)
+    #finder.main([cgm_abs.name, cgm_abs.galaxy.coord], imsize=2.*u.arcmin, show_circ=False)
+
+    lclr = 'blue'
+    lw = 2.
+
+    # Start the plot
+    #outfil='fig_j1555_lya.pdf'
+    #pp = PdfPages(outfil)
+
+    # Full QSO spectrum
+    spec = cos_halos.load_bg_cos_spec(inp, 1215.6700*u.AA)
+    plt.figure(figsize=(5, 5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 1)
+
+
+    # Axes
+    ax = plt.subplot(gs[0])
+    #ax.xaxis.set_minor_locator(plt.MultipleLocator(0.5))
+    #ax.xaxis.set_major_locator(plt.MultipleLocator(1.))
+    #ax.get_xaxis().get_major_formatter().set_useOffset(False)
+    ax.set_xlim(1436., 1455.)
+    ax.set_ylim(-0.1, 1.3)
+    ax.set_ylabel('Normalized Flux')
+    ax.set_xlabel(r'Wavelength ($\AA$)')
+    for axis in ['top','bottom','left','right']:
+      ax.spines[axis].set_linewidth(2.0)
+
+    # Zero line
+    ax.plot([-1e9,1e9], (0.,0.), 'g--', lw=lw)
+    wv_lya = 1215.670 * (1+cgm_abs.zabs)
+    ax.plot( [wv_lya]*2, [-1e9,1e9], 'b--', lw=lw)
+
+    # Data
+    ax.plot(spec.wavelength, spec.flux, 'k', drawstyle='steps-mid')
+    ax.plot(spec.wavelength, spec.sig, 'r:')
+
+    #ax.fill_between( [1455., 1490.], [ymnx[0]]*2, [ymnx[1]]*2, color='blue', alpha=0.3)
+    # Label
+    ax.text(1437., 0.3, r'HI Ly$\alpha$', ha='left', fontsize=21.)#, color=lclr)
+
+    # Fonts
+    xputils.set_fontsize(ax,17.)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+    plt.savefig(outfil)
+    plt.close()
+    print("Wrote {:s}".format(outfil))
 
 ####
 #  Series of plots illustrating COS-Halos experiment
@@ -516,15 +570,19 @@ def main(flg_fig):
         fig_abs_gallery()
         fig_abs_gallery(axes_flg=1,outfil='fig_HI_gallery_rho.pdf')
 
+    # Lya zoom-in
+    if flg_fig & (2**3):
+        fig_lya()
 
 # Command line execution
 if __name__ == '__main__':
 
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
-        flg_fig += 2**0 # Experiment
+        #flg_fig += 2**0 # Experiment
         #flg_fig += 2**1 # Image gallery
         #flg_fig += 2**2 # Abs gallery
+        flg_fig += 2**3  # Lya zoom-in
     else:
         flg_fig = sys.argv[1]
 
