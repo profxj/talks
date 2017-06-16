@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import numpy as np
 import glob, os, sys
+import pdb
 
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'stixgeneral'
@@ -15,6 +16,7 @@ from astropy.io import ascii
 from astropy import units as u
 from astropy import constants as const
 
+'''
 from xastropy.abund import solar as xsolar
 from xastropy.atomic.elements import ELEMENTS
 from xastropy.atomic import ionization as xion
@@ -25,6 +27,8 @@ from xastropy import spec as xsp
 from xastropy.plotting import simple as xplots
 from xastropy.plotting import utils as xputils
 from xastropy.xutils import xdebug as xdb
+'''
+
 
 # Local
 #sys.path.append(os.path.abspath("../Analysis/py"))
@@ -270,6 +274,88 @@ def fig_ionstate(outfil=None):
     print('tlk_coshalos: Wrote {:s}'.format(outfil))
     pp.close()
 
+def fig_pie_chart():
+    """ Plot MCMC outputs for ne/nH from Neeleman+15
+    """
+    # Read COS-Halos
+
+    lsz = 13.
+    tsz = 18.
+
+    # Plot
+    fig = plt.figure(figsize=(8, 5))#, dpi=700)
+    gs = gridspec.GridSpec(2,2)
+
+    # Clusters
+    ax_c_mass = plt.subplot(gs[0])
+
+    labels = 'Galaxies', 'ICL', 'ICM'
+    c_clrs = ['green', 'orange', 'red']
+    stars = 0.0003 / (3e-4 + 0.00155)
+    icl = 0.15
+    icm = 1. - icl - stars
+    wedges = [stars, icl, icm]
+    explode = (0, 0, 0.1)
+
+    _, texts, _ = ax_c_mass.pie(wedges, explode=explode, labels=labels, autopct='%1.0f%%',
+        startangle=90, colors=c_clrs)
+    for text in texts:
+        text.set_fontsize(lsz)
+    ax_c_mass.axis('equal')
+    ax_c_mass.set_xlabel('Cluster Baryonic Mass', size=tsz)
+
+    # Cluster metals
+    ax_c_metals = plt.subplot(gs[2])
+    Z_comp = (1., 0.5, 0.3) # galaxies, ICL, ICM
+    Z_tot = np.sum(np.array(wedges)*Z_comp)
+    c_Z_frac = np.array(wedges)*Z_comp / Z_tot
+    _, texts, _ = ax_c_metals.pie(c_Z_frac, explode=explode, labels=labels, autopct='%1.0f%%',
+                  startangle=60, colors=c_clrs)
+    for text in texts:
+        text.set_fontsize(lsz)
+    ax_c_metals.axis('equal')
+    ax_c_metals.set_xlabel('Cluster Metal Mass', size=tsz)
+
+    # Galaxy mass
+    ax_g_mass = plt.subplot(gs[1])
+
+    labels = 'Galaxy', r'Cool CGM$^1$', r'Hot CGM$^2$'
+    g_clrs = ['green', 'skyblue', 'red']
+    mhalo_b = 2e11 # P17
+    galaxy = 0.17   # check
+    cool = 9e10 / mhalo_b
+    warm = 1. - galaxy - cool
+    wedges = [galaxy, cool, warm]
+    explode = (0, 0, 0)
+
+    _, texts, _ = ax_g_mass.pie(wedges, explode=explode, labels=labels, autopct='%1.0f%%',
+                  startangle=40, colors=g_clrs)
+    for text in texts:
+        text.set_fontsize(lsz)
+    ax_g_mass.axis('equal')
+    ax_g_mass.set_xlabel('Galaxy Baryonic Mass', size=tsz)
+
+
+    # Galaxy metals
+    ax_g_metals = plt.subplot(gs[3])
+    Z_comp = (1., 0.5, 0.5) # galaxy, cold, warm
+    Z_tot = np.sum(np.array(wedges)*Z_comp)
+    g_Z_frac = np.array(wedges)*Z_comp / Z_tot
+    _, texts, _ = ax_g_metals.pie(g_Z_frac, explode=explode, labels=labels, autopct='%1.0f%%',
+                    startangle=30, colors=g_clrs)
+    for text in texts:
+        text.set_fontsize(lsz)
+    ax_g_metals.axis('equal')
+    ax_g_metals.set_xlabel('Galaxy Metal Mass', size=tsz)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+
+    outfil='fig_pie_chart.png'
+    plt.savefig(outfil, dpi=800)
+    plt.close()
+    print('Generated {:s}'.format(outfil))
+
 #### ########################## #########################
 #### ########################## #########################
 #### ########################## #########################
@@ -292,21 +378,23 @@ def main(flg_fig):
 
     # Ionization
     if (flg_fig % 2**3) >= 2**2:
-        fig_ionstate()  
+        fig_ionstate()
+
+    # Pie chart (with ICM)
+    if flg_fig & (2**3):
+        fig_pie_chart()
 
 
-# Command line execution
+    # Command line execution
 if __name__ == '__main__':
 
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
         #flg_fig += 2**0 # EW
         #flg_fig += 2**1 # COG
-        flg_fig += 2**2 # Ionization state
-        #flg_fig += 2**1 # pLLS
-        #flg_fig += 2**2 # Ambig
-        #flg_fig += 2**3 # Summary
-        #flg_fig += 2**4 # Check NHI
+        #flg_fig += 2**2 # Ionization state
+        flg_fig += 2**3 # Check NHI
+
     else:
         flg_fig = sys.argv[1]
 
