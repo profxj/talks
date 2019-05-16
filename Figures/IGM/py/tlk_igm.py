@@ -12,16 +12,19 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
+from astropy.io import ascii
 from astropy import units as u
 from astropy.io import fits
 
+from linetools.spectra.xspectrum1d import XSpectrum1D
 from linetools.spectra import io as lsio
 
 from specdb.specdb import IgmSpec
 
 # Local
-#sys.path.append(os.path.abspath("../Analysis/py"))
-#import lls_sample as lls_s
+sys.path.append(os.path.abspath("../py"))
+from tlk_fig_utils import set_fontsize, set_spines
+
 
 
 ####
@@ -129,6 +132,51 @@ def fig_fn(outfil=None, data_list=None):
     print('tlk_igm.fig_fn: Wrote {:s}'.format(outfil))
     pp.close()
 
+def fig_lya_forest(zoom_in=False, redshift=False):
+
+    outfile = 'fig_lya_forest.png'
+    xmnx = (3950., 4363)
+
+    if zoom_in:
+        xmnx = (4130., 4183)
+        outfile = 'fig_lya_forest_zoom.png'
+
+    if redshift:
+        outfile = 'fig_lya_forest_z.png'
+        xmnx = np.array(xmnx)/1215.6701 - 1.
+
+    # Read spectrum
+    spec_file = os.getenv('DROPBOX_DIR')+'Keck/HIRES/RedData/Q1759+75/Q1759+75T_f.fits'
+    xspec = XSpectrum1D.from_file(spec_file)
+
+
+    plt.figure(figsize=(9, 5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 1)
+    ax = plt.subplot(gs[:, :])
+
+    # Plot
+    if redshift:
+        xplt = xspec.wavelength.value/1215.6701 - 1.
+    else:
+        xplt = xspec.wavelength.value
+    ax.plot(xplt, xspec.flux, 'k')
+    ax.plot([0.,5000], [0., 0.], 'g--')
+    ax.set_xlim(xmnx)
+    ax.set_ylim(-0.05, 1.1)
+    ax.set_ylabel('Normalized Flux')
+    if redshift:
+        ax.set_xlabel('Redshift (z)')
+    else:
+        ax.set_xlabel('Wavelength (A)')
+
+    set_fontsize(ax, 15.)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+    plt.savefig(outfile, dpi=500)
+    plt.close()
+    print("Wrote: {:s}".format(outfile))
 
 def fig_lowz_hiz(outfil='fig_loz_hiz.png'):
     """ Show varying IGM transmission
@@ -253,12 +301,18 @@ def main(flg_fig):
     else:
         flg_fig = int(flg_fig)
 
-    # EW
-    if (flg_fig % 2**1) >= 2**0:
+    # f(N)
+    if (flg_fig & 2**0):
         fig_fn()
 
+    # Lya forest
+    if (flg_fig & 2**1):
+        fig_lya_forest()
+        fig_lya_forest(zoom_in=True)
+        fig_lya_forest(redshift=True)
+
     # Low-z vs. high-z
-    if flg_fig & 2**1:
+    if flg_fig & 2**2:
         fig_lowz_hiz()
 
 
@@ -268,7 +322,8 @@ if __name__ == '__main__':
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
         #flg_fig += 2**0 # fN
-        flg_fig += 2**1 # lowz vs. high z
+        flg_fig += 2**1 # Lya forest
+        flg_fig += 2**2 # lowz vs. high z
     else:
         flg_fig = sys.argv[1]
 

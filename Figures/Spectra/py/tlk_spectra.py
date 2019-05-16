@@ -6,23 +6,20 @@ import numpy as np
 import glob, os, sys
 
 import matplotlib as mpl
+import pdb
+
 mpl.rcParams['font.family'] = 'stixgeneral'
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from astropy.io import ascii
-from astropy.relativity import velocities as arv
 from astropy import units as u
 from astropy import constants as const
 
-from xastropy.spec.lines_utils import AbsLine
-from xastropy.igm.abs_sys.lls_utils import LLS_System, LLS_Survey
-from xastropy.igm.abs_sys import abssys_utils as abssys
-from xastropy import spec as xsp
-from xastropy.plotting import simple as xplots
-from xastropy.plotting import utils as xputils
-from xastropy.xutils import xdebug as xdb
+from linetools.spectra import io as lsio
+
+from specdb.specdb import IgmSpec
 
 # Local
 #sys.path.append(os.path.abspath("../Analysis/py"))
@@ -265,6 +262,76 @@ def fig_cog_abs_web(outfil=None, vmnx=None):
     print('tlk_spectra.fig_cog_abs_web: Wrote {:s}'.format(outfil))
     pp.close()
 
+
+def fig_resolution(outfil='fig_resolution.png'):
+    """ Plots of FJ0812 in several spectrometers
+    """
+    # Load spectra
+    igmsp = IgmSpec()
+    sdss, _ = igmsp.get_sdss(861,333, groups=['SDSS_DR7'])
+    sdss.normed = True
+
+    esi = lsio.readspec(os.getenv('DROPBOX_DIR')+'Keck/ESI/RedData/FJ0812+32/FJ0812+32_f.fits')
+    hires = lsio.readspec(os.getenv('DROPBOX_DIR')+'Keck/HIRES/RedData/FJ0812+32/FJ0812+32B_f.fits')
+
+    # Initialize
+    xmnx = (4100., 4450)
+    ymnx = (-0.05, 1.28)
+    lw = 1.0
+    # Start the plot
+    fig = plt.figure(figsize=(8.5, 5.0))
+
+    plt.clf()
+    gs = gridspec.GridSpec(2,2)
+    lbls = ['SDSS: R=2000\n N ~ 100,000', 'ESI: R=8000\n N~1,000', 'HIRES: R=30000\n N~100']
+    clrs = ['blue', 'red', 'green']
+
+    # Final plot
+    ax2 = plt.subplot(gs[1,1])
+    ax2.set_xlim(4270, 4295)
+    ax2.set_ylim(ymnx)
+    ax2.set_xlabel('Wavelength (Angstroms)')
+
+    for qq in range(3):
+        scl = 1.
+        if qq == 0:
+            spec = sdss
+            scl = 1.1
+        elif qq == 1:
+            spec = esi
+        elif qq == 2:
+            spec = hires
+
+        # SDSS
+        ax = plt.subplot(gs[qq % 2,qq // 2])
+        #ax.xaxis.set_minor_locator(plt.MultipleLocator(0.5))
+        #ax.xaxis.set_major_locator(plt.MultipleLocator(20.))
+        #ax.yaxis.set_minor_locator(plt.MultipleLocator(0.1))
+        #ax.yaxis.set_major_locator(plt.MultipleLocator(0.2))
+        ax.set_xlim(xmnx)
+        ax.set_ylim(ymnx)
+        ax.set_ylabel('Normalized Flux')
+        # if qq == 0:
+        #     ax.get_xaxis().set_ticks([])
+        # else:
+        ax.set_xlabel('Wavelength (Angstroms)')
+
+        ax.plot(spec.wavelength, spec.flux/scl, 'k', linewidth=lw)
+        ax2.plot(spec.wavelength, spec.flux/scl, color=clrs[qq], linewidth=lw,
+                 drawstyle='steps-mid')
+
+        # Label
+        csz = 12.
+        ax.text(0.95, 0.8, lbls[qq], transform=ax.transAxes, color=clrs[qq],
+                size=csz, ha='right', bbox={'facecolor':'white'})
+
+    # Layout and save
+    print('Writing {:s}'.format(outfil))
+    plt.tight_layout(pad=0.2,h_pad=0.3,w_pad=0.4)
+    plt.savefig(outfil, dpi=500)
+    plt.close()
+
+
 #### ########################## #########################
 #### ########################## #########################
 #### ########################## #########################
@@ -281,10 +348,13 @@ def main(flg_fig):
     if (flg_fig % 2**1) >= 2**0:
         fig_ew(outfil='fig_EW.pdf')
 
-    # pLLS
+    # COG
     if (flg_fig % 2**2) >= 2**1:
         fig_cog_abs_web()
 
+    # Spectral resolution [Taken from Saas Fee]
+    if (flg_fig & 2**2):
+        fig_resolution()
 
 # Command line execution
 if __name__ == '__main__':
@@ -292,11 +362,8 @@ if __name__ == '__main__':
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
         #flg_fig += 2**0 # EW
-        flg_fig += 2**1 # COG
-        #flg_fig += 2**1 # pLLS
-        #flg_fig += 2**2 # Ambig
-        #flg_fig += 2**3 # Summary
-        #flg_fig += 2**4 # Check NHI
+        #flg_fig += 2**1 # COG
+        flg_fig += 2**2 # R
     else:
         flg_fig = sys.argv[1]
 
