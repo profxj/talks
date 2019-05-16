@@ -12,18 +12,154 @@ mpl.rcParams['font.family'] = 'stixgeneral'
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
+from matplotlib import cm
+
+from scipy.interpolate import interp1d
 
 from astropy.io import ascii
 from astropy import units as u
-from astropy import constants as const
 
 from linetools.spectra import io as lsio
+
 
 from specdb.specdb import IgmSpec
 
 # Local
 #sys.path.append(os.path.abspath("../Analysis/py"))
 #import lls_sample as lls_s
+
+def fig_xmp_spec(outfil=None):
+    """ For the public
+    """
+    # Read spec
+    spec = lsio.readspec('./data/xmp_sdss_spec.fits')
+    # Deal with 5575
+    badpx = (spec.wavelength > 5568*u.AA) & (spec.wavelength < 5595*u.AA)
+    spec.data['flux'][0,badpx] = 0.3
+    # Smooth
+    #spec.box_smooth(3)
+    z=0.2081
+
+    # Interpolate
+    sint = interp1d(spec.wavelength/(1+z), spec.flux)
+    #xwv = np.linspace(spec.wvmin.value, spec.wvmax.value, 90000) / (1+z)
+    #xwv = np.linspace(spec.wvmin.value, spec.wvmax.value, 200000) / (1+z)
+    xwv = spec.wavelength.value/(1+z)
+    xwv = np.concatenate([xwv, np.linspace(3800., 5100., 80000),
+                          np.linspace(6300., 7200., 40000)])
+    fx = sint(xwv)
+
+
+    # Plot as scatter
+    plt.figure(figsize=(8, 5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 1)
+    ax = plt.subplot(gs[0])
+
+    mxwv = 7000. # spec.wvmax.value
+    #ax.scatter(spec.wavelength, spec.flux, s=10., c=cm.rainbow(spec.wavelength.value/mxwv))
+    def clrs(wv):
+        cc=cm.rainbow((wv-3800.)/(mxwv-3800.))
+        return cc
+    ax.scatter(xwv, fx, s=5., c=clrs(xwv))
+
+    # Another spectrum
+    #xwv2 = xwv*(1+300./3e5)
+    #fx2 = sint(xwv)
+    #ax.scatter(xwv2, fx2, s=5., c=clrs(xwv2))
+
+    # Labels
+    for wv, yv in zip([4102.892, 4341.68, 4862.7, 6564.6], [8., 13., 20., 36]):
+        ax.text(wv, yv, 'Hydrogen', color=clrs(wv), size=15., ha='center', va='bottom', rotation=90.)
+    for wv, yv in zip([4400.4, 5070.], [8, 40.]):
+        ax.text(wv, yv, 'Oxygen', color=clrs(wv), size=15., ha='center', va='bottom', rotation=90.)
+    for wv, yv in zip([3869.8], [14]):
+        ax.text(wv, yv, 'Neon', color=clrs(wv), size=15., ha='center', va='bottom', rotation=90.)
+
+    #Axes
+    ax.set_xlim(3800., 7200.)
+    ax.set_ylim(-5., 100.)
+    ax.set_ylabel('Brightness')
+    ax.set_xlabel(r'Wavelength ($\AA$)')
+
+    # Fonts
+    xputils.set_fontsize(ax,15.)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+    outfile = 'fig_xmp_spec.png'
+    plt.savefig(outfile, dpi=800)
+    plt.close()
+
+
+def fig_blueshift(outfil=None, shift='blue', show_gal=True):
+    """ For the public
+    """
+    # Read spec
+    spec = lsio.readspec('./data/xmp_sdss_spec.fits')
+    # Deal with 5575
+    badpx = (spec.wavelength > 5568*u.AA) & (spec.wavelength < 5595*u.AA)
+    spec.data['flux'][0,badpx] = 0.3
+    # Smooth
+    z=0.2081
+
+    # Interpolate
+    sint = interp1d(spec.wavelength/(1+z), spec.flux)
+    xwv = np.linspace(6500., 6600., 20000) # Halpha only
+    fx = sint(xwv)
+
+
+    # Plot as scatter
+    plt.figure(figsize=(5.2, 5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 1)
+    ax = plt.subplot(gs[0])
+
+    mxwv = 7000. # spec.wvmax.value
+    #ax.scatter(spec.wavelength, spec.flux, s=10., c=cm.rainbow(spec.wavelength.value/mxwv))
+    def clrs(wv):
+        cc=cm.rainbow((wv-3800.)/(mxwv-3800.))
+        return cc
+    ax.scatter(xwv, fx, s=5., c=clrs(xwv))
+
+    # Labels
+    Ha = 6564.6
+    ax.text(Ha, 5., r'Milky Way H$\alpha$', color=clrs(Ha), size=15., ha='center', va='bottom', rotation=90.)
+
+    # Other galaxies
+    if show_gal:
+        xwv2 = np.linspace(6500., 6600., 1000) # Halpha only
+        fx2 = sint(xwv2)
+        if shift == 'blue': # M31
+            z = -300./3e5
+            ax.scatter(xwv2*(1+z), fx2*0.7, s=5., c=clrs(xwv2))
+            ax.text(Ha*(1+z), 5., r'M31 H$\alpha$', color=clrs(Ha*(1+z)), size=15., ha='center', va='bottom', rotation=90.)
+        elif shift == 'red': # other galaxies
+            for vel,flux in zip([500., 1000., 2000.], [0.7, 0.6, 0.5]):
+                z = vel/3e5
+                ax.scatter(xwv2*(1+z), fx2*flux, s=5., c=clrs(xwv2))
+                ax.text(Ha*(1+z), 2., r'Other H$\alpha$', color=clrs(Ha*(1+z)), size=15., ha='center', va='bottom', rotation=90.)
+
+    #Axes
+    if shift=='blue':
+        ax.set_xlim(6530., 6600.)
+    else:
+        ax.set_xlim(6545., 6620.)
+    ax.set_ylim(-5., 40.)
+    ax.set_ylabel('Brightness')
+    ax.set_xlabel(r'Wavelength ($\AA$)')
+
+    # Fonts
+    xputils.set_fontsize(ax,15.)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+    if shift == 'blue':
+        outfile = 'fig_blueshift.png'
+    elif shift == 'red':
+        outfile = 'fig_redshift.png'
+    plt.savefig(outfile, dpi=800)
+    plt.close()
 
 
 ####
@@ -352,8 +488,18 @@ def main(flg_fig):
     if (flg_fig % 2**2) >= 2**1:
         fig_cog_abs_web()
 
+    # XMP
+    if flg_fig & 2**2:
+        fig_xmp_spec()
+
+    # Blue/redshift
+    if flg_fig & 2**3:
+        #fig_blueshift(show_gal=False)
+        #fig_blueshift()
+        fig_blueshift(shift='red')
+
     # Spectral resolution [Taken from Saas Fee]
-    if (flg_fig & 2**2):
+    if (flg_fig & 2**4):
         fig_resolution()
 
 # Command line execution
@@ -362,8 +508,11 @@ if __name__ == '__main__':
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
         #flg_fig += 2**0 # EW
+        #jflg_fig += 2**1 # COG
+        #flg_fig += 2**2 # XMP spec (for the public)
+        flg_fig += 2**3 # Blue/redshift
         #flg_fig += 2**1 # COG
-        flg_fig += 2**2 # R
+        flg_fig += 2**4 # R
     else:
         flg_fig = sys.argv[1]
 
