@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import numpy as np
 import glob, os, sys, imp
+import pdb
 
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'stixgeneral'
@@ -13,9 +14,12 @@ import matplotlib.gridspec as gridspec
 
 from astropy.io import ascii
 from astropy import units as u
-from astropy import constants as const
+from astropy.io import fits
 
 from linetools.spectra.xspectrum1d import XSpectrum1D
+from linetools.spectra import io as lsio
+
+from specdb.specdb import IgmSpec
 
 # Local
 sys.path.append(os.path.abspath("../py"))
@@ -174,6 +178,117 @@ def fig_lya_forest(zoom_in=False, redshift=False):
     plt.close()
     print("Wrote: {:s}".format(outfile))
 
+def fig_lowz_hiz(outfil='fig_loz_hiz.png'):
+    """ Show varying IGM transmission
+    """
+    #hdlls_path = '/u/xavier/paper/LLS/Optical/Data/DR1/Spectra/'
+    esi_path = '/u/xavier/Keck/ESI/RedData/'
+    hst_path = '/u/xavier/HST/Cycle23/z1IGM/Archive/PG1206+459/'
+    #
+    igmsp = IgmSpec()
+    idicts = [
+        dict(filename='Data/3C273_STIS_E140M_F.fits'),
+        dict(filename=hst_path+'PG1206+459_E230M_f.fits'),
+        dict(coord='J212329.50-005052.9', group=['HD-LLS_DR1']),
+        dict(coord='J113621.00+005021.0', group=['HD-LLS_DR1']),
+        dict(coord='J113246.5+120901.6', group=['ESI_DLA']),
+        dict(filename=esi_path+'J1148+5251/SDSSJ1148+5251_stack.fits'),  # z=6
+        ]
+    lbls = [
+        'HST/STIS: 3C273',
+        'HST/STIS: PG1206+459',
+        'Keck/HIRES: J2123-0050',  # 2.26
+        'Magellan/MIKE: J1136+0050', # 3.43
+        'Keck/ESI: J1132+1209', # 5.17
+        'Keck/ESI: J1148+5251', # 6.4
+        ]
+    zems = [0.17, 1.16, 2.26, 3.43, 5.17, 6.4]
+    xrest = np.array([1080, 1200.])
+    ymnx = [-0.1, 1.1]
+
+    # Cut down
+    idicts = [idicts[0], idicts[3]]
+    lbls = [lbls[0], lbls[3]]
+    zems = [zems[0], zems[3]]
+
+    lw = 1.
+    csz = 19.
+
+    # Start the plot
+    #fig = plt.figure(figsize=(5.0, 8.0))
+    fig = plt.figure(figsize=(8.0, 5.0))
+
+    plt.clf()
+    gs = gridspec.GridSpec(len(lbls),1)
+
+    # Loop
+    for qq, lbl in enumerate(lbls):
+
+        # Grab data
+        idict = idicts[qq]
+        if 'coord' in idict.keys():
+            qdict = {}
+            for key in idict.keys():
+                if key not in ['coord','group']:
+                    qdict[key] = idict[key]
+            spec, meta = igmsp.spectra_from_coord(idict['coord'], tol=5.*u.arcsec,
+                                                  groups=idict['group'])#, query_dict=qdict)
+            if meta is None:
+                print("Bad coord?")
+                pdb.set_trace()
+            elif len(meta) > 1:
+                pdb.set_trace()
+        else:
+            spec = lsio.readspec(idict['filename'])
+
+        if lbl == 'HST/STIS: 3C273':
+            hdu = fits.open('Data/3C273_STIS_E140M_c.fits')
+            conti_3c273 = hdu[0].data
+            spec.co = conti_3c273
+            spec.normed = True
+
+        # Spectrum
+        ax = plt.subplot(gs[qq])
+        ax.set_xlim(xrest*(1+zems[qq])/1215.67 - 1)
+        ax.set_ylim(ymnx)
+        if qq == 3:
+            ax.set_ylabel('Normalized Flux')
+        if qq == len(lbls)-1:
+            ax.set_xlabel(r'Redshift of Ly$\alpha$')
+
+
+        ax.plot(spec.wavelength.value/1215.6701 - 1, spec.flux, 'k', linewidth=lw)
+
+        # Label
+        #ax.text(0.05, 0.95, lbl+' zem={:0.1f}'.format(zems[qq]), color='blue',
+        #    transform=ax.transAxes, size=csz, ha='left', bbox={'facecolor':'white'})
+        #
+        set_fontsize(ax, 12.)
+
+    # Layout and save
+    #plt.subplots_adjust(hspace=0)
+    plt.tight_layout(pad=0.2,h_pad=0.0,w_pad=0.4)
+    plt.savefig(outfil, dpi=600)
+    plt.close()
+    # Finish
+    print('Writing {:s}'.format(outfil))
+
+def set_fontsize(ax,fsz):
+    '''
+    Generate a Table of columns and so on
+    Restrict to those systems where flg_clm > 0
+
+    Parameters
+    ----------
+    ax : Matplotlib ax class
+    fsz : float
+      Font size
+    '''
+    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+                 ax.get_xticklabels() + ax.get_yticklabels()):
+        item.set_fontsize(fsz)
+
+
 #### ########################## #########################
 #### ########################## #########################
 #### ########################## #########################
@@ -196,6 +311,10 @@ def main(flg_fig):
         fig_lya_forest(zoom_in=True)
         fig_lya_forest(redshift=True)
 
+    # Low-z vs. high-z
+    if flg_fig & 2**2:
+        fig_lowz_hiz()
+
 
 # Command line execution
 if __name__ == '__main__':
@@ -204,6 +323,7 @@ if __name__ == '__main__':
         flg_fig = 0 
         #flg_fig += 2**0 # fN
         flg_fig += 2**1 # Lya forest
+        flg_fig += 2**2 # lowz vs. high z
     else:
         flg_fig = sys.argv[1]
 
