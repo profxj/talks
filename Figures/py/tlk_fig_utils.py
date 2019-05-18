@@ -1,5 +1,6 @@
 """ Utility code for Talk Figures
 """
+import matplotlib as mpl
 
 def set_fontsize(ax,fsz):
     '''
@@ -29,3 +30,12 @@ def set_spines(ax, lw):
     """
     for axis in ['top','bottom','left','right']:
         ax.spines[axis].set_linewidth(lw)
+
+
+
+def set_mplrc():
+    mpl.rcParams['mathtext.default'] = 'it'
+    mpl.rcParams['font.size'] = 12
+    mpl.rc('font',family='Times New Roman')
+    mpl.rcParams['text.latex.preamble'] = [r'\boldmath']
+    mpl.rc('text', usetex=True)

@@ -4,28 +4,23 @@ from __future__ import print_function
 
 import numpy as np
 import glob, os, sys
+from IPython import embed
 
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'stixgeneral'
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
-from astropy import units as u
-from astropy import constants as const
+from astropy import units
+from astropy import constants
+from astropy.cosmology import Planck15
 
 from linetools.spectra import io as lsio
 
-#from xastropy.spec.lines_utils import AbsLine
-#from xastropy.igm.abs_sys.lls_utils import LLS_System, LLS_Survey
-#from xastropy.igm.abs_sys import abssys_utils as abssys
-#from xastropy import spec as xsp
-#from xastropy.plotting import simple as xplots
-#from xastropy.plotting import utils as xputils
-#from xastropy.xutils import xdebug as xdb
 
 # Local
-#sys.path.append(os.path.abspath("../Analysis/py"))
-#import lls_sample as lls_s
+sys.path.append(os.path.abspath("../py"))
+import tlk_fig_utils
 
 
 ####
@@ -81,6 +76,152 @@ def fig_q1009(outfil=None):
     plt.close()
     print("Wrote: {:s}".format(outfil))
 
+
+def fig_age_T_BBN(outfile='fig_age_T_BBN.png'):
+    """
+    """
+    tlk_fig_utils.set_mplrc()
+
+    z = 10 ** np.linspace(7., 14, 10000)
+    # Temperature
+    Tcmb = Planck15.Tcmb(z)
+
+    # Ages
+    age = 152 * (0.1 * units.MeV / constants.k_B / Tcmb) * units.s
+    age = age.to('s')
+
+    xrange = [age[-1].value, 2e3]
+    yrange = [1e8, 1e15]
+
+    # Figure
+    plt.figure(figsize=(5, 5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 1)
+    ax = plt.subplot(gs[0])
+
+    # Temperature
+    ax.plot(age.to('s'), Tcmb, 'k-')
+
+    # Axes
+    ax.set_xlabel(r'\textbf{Age (seconds)}')
+    ax.set_ylabel(r'\textbf{Temperature (Kelvin)}')
+    ax.set_xlim(xrange)
+    ax.set_ylim(yrange)
+
+    ax.set_yscale("log", nonposy='clip')
+    ax.set_xscale("log", nonposx='clip')
+
+    lsz = 15.
+
+    # Quark soup
+    iquark = np.argmin(np.abs(Tcmb.value-1e13))
+    ax.fill_between(age[iquark:].value,
+                    yrange[0], Tcmb[iquark:].value, color='green', alpha=0.4)
+    ax.text(1.5e-3, 2e14, r'\textbf{Quark}'+'\n'+r'\textbf{Soup}', color='black',
+            fontsize=lsz, ha='left', va='bottom')
+
+    # Electrons decouple
+    iBBN0 = np.argmin(np.abs(Tcmb.value-9e8))
+    ax.fill_between(age[iBBN0:iquark].value,
+                    yrange[0], Tcmb[iBBN0:iquark].value, color='red', alpha=0.4)
+    ax.text(2e-2, 1e13, r'\textbf{p,n freeze out}', color='black',
+            fontsize=lsz, ha='left', va='bottom')
+    ax.text(8, 10**10.5, r'$\nu \, \rm decouple$', color='black',
+            fontsize=lsz, ha='left', va='bottom')
+    ax.text(20, 10**10, r'$\rm e^-$', color='black',
+            fontsize=lsz, ha='left', va='bottom')
+
+    # BBN
+    iBBN1 = np.argmin(np.abs(Tcmb.value-2e8))
+    ax.fill_between(age[iBBN1:iBBN0].value,
+                    yrange[0], Tcmb[iBBN1:iBBN0], color='blue', alpha=0.4)
+    ax.text(220, 10**9, r'\textbf{BBN}', color='black',
+            fontsize=lsz, ha='left', va='bottom')
+
+    # Label
+    #lsz = 18.
+    #ax.text(4259.5, 0.25, r'HI Ly$\alpha$', color='blue', ha='center', size=lsz)
+    #ax.text(4257.95, 0.80,r'DI Ly$\alpha$', color='darkgreen', size=lsz, ha='left')
+    set_fontsize(ax, 16.)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+    plt.savefig(outfile, dpi=500)
+    plt.close()
+    print("Wrote: {:s}".format(outfile))
+
+
+
+def fig_age_CMB(outfile='fig_age_CMB.png'):
+    """
+    Cartoon the T evolution into the CMB release
+    """
+    tlk_fig_utils.set_mplrc()
+
+    z = 10 ** np.linspace(np.log10(6.), 4, 10000)
+
+    # Temperature
+    Tcmb = Planck15.Tcmb(z)
+
+    # Ages
+    age = Planck15.age(z)
+    age = age.to('year')
+
+    xrange = [1e4, np.max(age.value)]
+    yrange = [10, 2e4]
+
+    # Figure
+    plt.figure(figsize=(5, 5))
+    plt.clf()
+    gs = gridspec.GridSpec(1, 1)
+    ax = plt.subplot(gs[0])
+
+    # Temperature
+    ax.plot(age.to('year'), Tcmb, 'k-')
+
+    # Axes
+    ax.set_xlabel(r'\textbf{Age (year)}')
+    ax.set_ylabel(r'\textbf{Temperature (Kelvin)}')
+    ax.set_xlim(xrange)
+    ax.set_ylim(yrange)
+
+    ax.set_yscale("log", nonposy='clip')
+    ax.set_xscale("log", nonposx='clip')
+
+    lsz = 15.
+
+    # Radiation dominated
+    irad = np.argmin(np.abs(Tcmb.value-1e4))
+    ax.fill_between(age[irad:].value,
+                    yrange[0], Tcmb[irad:], color='green', alpha=0.4)
+    ax.text(1.2e4, 1e4, r'\textbf{Radiation}'+'\n'+r'\textbf{Dominated}', color='black',
+            rotation=90., fontsize=lsz, ha='left', va='top')
+
+    # Photons Decouple
+    iCMB = np.argmin(np.abs(Tcmb.value-10**3.5))
+    ax.fill_between(age[iCMB:irad].value,
+                    yrange[0], Tcmb[iCMB:irad], color='red', alpha=0.4)
+    ax.text(3e5, 10**3.5, r'\textbf{CMB}'+'\n'+r'\textbf{Released}', color='black',
+            rotation=90., fontsize=lsz, ha='right', va='top')
+
+    # Dark ages
+    ax.fill_between(age[0:iCMB].value, yrange[0], Tcmb[0:iCMB], color='blue', alpha=0.4)
+    ax.text(1e7, 60, r'\textbf{Dark}'+'\n'+r'\textbf{Ages}', color='black',
+            fontsize=lsz, ha='left', va='top')
+
+    # Label
+    #lsz = 18.
+    #ax.text(4259.5, 0.25, r'HI Ly$\alpha$', color='blue', ha='center', size=lsz)
+    #ax.text(4257.95, 0.80,r'DI Ly$\alpha$', color='darkgreen', size=lsz, ha='left')
+    set_fontsize(ax, 16.)
+
+    # Write
+    plt.tight_layout(pad=0.2,h_pad=0.,w_pad=0.1)
+    plt.savefig(outfile, dpi=500)
+    plt.close()
+    print("Wrote: {:s}".format(outfile))
+
+
 def set_fontsize(ax,fsz):
     '''
     Generate a Table of columns and so on
@@ -110,8 +251,17 @@ def main(flg_fig):
         flg_fig = int(flg_fig)
 
     # EW
-    if (flg_fig % 2**1) >= 2**0:
+    if (flg_fig & 2**0):
         fig_q1009(outfil='fig_EW.pdf')
+
+    # T during BBN
+    if (flg_fig & 2**1):
+        fig_age_T_BBN()
+
+    # T during CMB
+    if (flg_fig & 2**2):
+        fig_age_CMB()
+
 
 
 # Command line execution
@@ -119,8 +269,9 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1: # Figs
         flg_fig = 0 
-        flg_fig += 2**0 # D in Q1009
-        #flg_fig += 2**1 # COG
+        #flg_fig += 2**0 # D in Q1009
+        flg_fig += 2**1 # age vs T
+        flg_fig += 2**2 # age vs T near CMB release
     else:
         flg_fig = sys.argv[1]
 
