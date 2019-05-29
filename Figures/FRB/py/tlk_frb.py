@@ -88,6 +88,28 @@ def fig_lorimer_DM(outfile='fig_lorimer_DM.png'):
     print('Wrote {:s}'.format(outfile))
 
 
+def fig_repeater_DM(outfile='fig_repeater_DM.png'):
+    """
+
+    """
+    set_mplrc()
+
+    repeater = frb.FRB.by_name('FRB121102')
+
+    plt.clf()
+    fig = plt.figure(figsize=(14., 10))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    #
+    frb_figs.sub_cartoon(ax1, ax2, repeater.coord, repeater.z, host_DM=150., halos=False,
+                         ymax=repeater.DM.value, fg_halos=None)
+
+    # Layout and save
+    plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
+    plt.savefig(outfile, dpi=300)
+    plt.close()
+    print('Wrote {:s}'.format(outfile))
+
+
 def fig_hst27_others(outfile='fig_hst27_others.pdf'):
     """
 
@@ -168,45 +190,6 @@ def fig_hst27_others(outfile='fig_hst27_others.pdf'):
     print('Wrote {:s}'.format(outfile))
 
 
-def fig_hst27_pop(outfile='fig_hst27_pop.pdf'):
-    """
-    BPT and SFR vs. Mstar
-    """
-    ffutils.set_mplrc()
-
-    # FRBs and hosts
-    HG121102 = frbgalaxy.FRBHost.by_name('121102')
-    HG180924 = frbgalaxy.FRBHost.by_name('180924')
-    HG181112 = frbgalaxy.FRBHost.by_name('181112')
-
-    # Edit 1811122 because of Telluric
-    HG181112.neb_lines['[NII] 6584'] = HG181112.neb_lines['[NII] 6584'] / 4
-    #HG181112.neb_lines['Halpha_err'] = HG181112.neb_lines['Halpha_err']
-
-    galaxies = [HG121102, HG180924, HG181112]
-    clrs = ['black', 'blue', 'red']
-    markers = ['s', 'o', 'o']
-
-    # Start the plot
-    fig = plt.figure(figsize=(15, 7))
-    plt.clf()
-    xwidth = 0.38
-    ywidth = 0.9
-    y0 = 0.08
-
-    # BPT
-    axBPT = fig.add_axes([0.10, y0, xwidth, ywidth])
-    ffgalaxies.sub_bpt(axBPT, galaxies, clrs, markers, SDSS_clr='Greys')
-
-    # SFR vs. Mstar
-    axSFMS = fig.add_axes([0.57, y0, xwidth, ywidth])
-    frb_figs.sub_sfms(axSFMS, galaxies, clrs, markers)
-
-    # Layout and save
-    plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
-    plt.savefig(outfile, dpi=300)
-    plt.close()
-    print('Wrote {:s}'.format(outfile))
 
 def log_me(val, err):
     xerr = np.array([[np.log10(val) - np.log10(val - err)],
@@ -249,11 +232,7 @@ def main(flg_fig):
 
     # Other images
     if flg_fig & (2**1):
-        fig_hst27_others() #'fig_hst27_others.png')
-
-    # Other images
-    if flg_fig & (2**2):
-        fig_hst27_pop() #'fig_hst27_pop.png')
+        fig_repeater_DM()
 
 
 
@@ -262,9 +241,8 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1:
         flg_fig = 0
-        flg_fig += 2**0   # Lorimer DM
-        #flg_fig += 2**1   # HST Cycle 27 -- others
-        #flg_fig += 2**2   # HST Cycle 27 -- population
+        #flg_fig += 2**0   # Lorimer DM
+        flg_fig += 2**1   # Repeater DM
     else:
         flg_fig = sys.argv[1]
 
