@@ -65,21 +65,22 @@ def _frac_brightness(n,r,reff):
     return quad(integrand,0,r)[0]/quad(integrand,0,np.inf)[0]
 
 
-def fig_lorimer_DM(outfile='fig_lorimer_DM.png'):
+def fig_lorimer_DM(outfile='fig_lorimer_DM.png', z_frb=0.3):
     """
+    DM Cartoon for the Lorimer burst
 
     """
     set_mplrc()
 
     lorimer = frb.FRB('FRB010724', 'J011806.0-751218.0',
-                        375*units.pc/units.cm**3, z_frb=0.3)
+                        375*units.pc/units.cm**3, z_frb=z_frb)
 
     plt.clf()
     fig = plt.figure(figsize=(14., 10))
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
     #
     frb_figs.sub_cartoon(ax1, ax2, lorimer.coord, lorimer.z, host_DM=50., halos=False,
-                         ymax=lorimer.DM.value, fg_halos=None)
+                         FRB_DM=lorimer.DM.value, fg_halos=None, yscl=0.97)
 
     # Layout and save
     plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
@@ -227,7 +228,6 @@ def main(flg_fig):
 
     # Lorimer DM cartoon
     if flg_fig & (2**0):
-        #fig_hst27_180924()
         fig_lorimer_DM()
 
     # Other images
@@ -241,8 +241,8 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1:
         flg_fig = 0
-        #flg_fig += 2**0   # Lorimer DM
-        flg_fig += 2**1   # Repeater DM
+        flg_fig += 2**0   # Lorimer DM
+        #flg_fig += 2**1   # Repeater DM
     else:
         flg_fig = sys.argv[1]
 
