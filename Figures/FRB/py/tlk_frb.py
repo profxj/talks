@@ -41,6 +41,7 @@ from frb.galaxies import frbgalaxy
 from frb import frb
 from frb.figures import utils as ffutils
 from frb.figures import galaxies as ffgalaxies
+from frb.figures import dm as ffdm
 
 # Local
 sys.path.append(os.path.abspath("/home/xavier/papers/FRB/Figures/py"))
@@ -58,7 +59,7 @@ def _frac_brightness(n,r,reff):
     return quad(integrand,0,r)[0]/quad(integrand,0,np.inf)[0]
 
 
-def fig_lorimer_DM(outfile='fig_lorimer_DM.png', z_frb=0.3):
+def fig_lorimer_DM(outfile='fig_lorimer_DM.png', z_frb=0.2):
     """
     DM Cartoon for the Lorimer burst
 
@@ -72,8 +73,8 @@ def fig_lorimer_DM(outfile='fig_lorimer_DM.png', z_frb=0.3):
     fig = plt.figure(figsize=(14., 10))
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
     #
-    frb_figs.sub_cartoon(ax1, ax2, lorimer.coord, lorimer.z, host_DM=50., halos=False,
-                         FRB_DM=lorimer.DM.value, fg_halos=None, yscl=0.97)
+    ffdm.sub_cartoon(ax1, ax2, lorimer.coord, lorimer.z, host_DM=50., halos=False,
+                         FRB_DM=lorimer.DM.value, fg_halos=None, yscl=0.97, IGM_only=False)
 
     # Layout and save
     plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
@@ -94,8 +95,30 @@ def fig_repeater_DM(outfile='fig_repeater_DM.png'):
     fig = plt.figure(figsize=(14., 10))
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
     #
-    frb_figs.sub_cartoon(ax1, ax2, repeater.coord, repeater.z, host_DM=150., halos=False,
-                         ymax=repeater.DM.value, fg_halos=None)
+    ffdm.sub_cartoon(ax1, ax2, repeater.coord, repeater.z, host_DM=150., halos=False,
+                         FRB_DM=repeater.DM.value, fg_halos=None, yscl=0.85)
+
+    # Layout and save
+    plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
+    plt.savefig(outfile, dpi=300)
+    plt.close()
+    print('Wrote {:s}'.format(outfile))
+
+
+def fig_180924_DM(outfile='fig_180924_DM.png'):
+    """
+
+    """
+    set_mplrc()
+
+    frb180924 = frb.FRB.by_name('FRB180924')
+
+    plt.clf()
+    fig = plt.figure(figsize=(14., 10))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    #
+    ffdm.sub_cartoon(ax1, ax2, frb180924.coord, frb180924.z, host_DM=50., halos=False,
+                         FRB_DM=frb180924.DM.value, fg_halos=None)
 
     # Layout and save
     plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
@@ -175,9 +198,10 @@ def main(flg_fig):
     if flg_fig & (2**0):
         fig_lorimer_DM()
 
-    # Other images
+    # Other DMs
     if flg_fig & (2**1):
         fig_repeater_DM()
+        #fig_180924_DM()
 
     # DM maps
     if flg_fig & (2**2):
@@ -191,7 +215,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         flg_fig = 0
         #flg_fig += 2**0   # Lorimer DM
-        flg_fig += 2**1   # Repeater DM
+        flg_fig += 2**1   # Repeater DM and others
         #flg_fig += 2**2   # DM maps
     else:
         flg_fig = sys.argv[1]
