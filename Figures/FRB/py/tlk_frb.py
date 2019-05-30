@@ -21,20 +21,13 @@ from matplotlib.patches import Ellipse
 
 from pkg_resources import resource_filename
 
-from scipy.interpolate import InterpolatedUnivariateSpline as IUS
+import healpy as hp
 
 from astropy import units
-from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.wcs import WCS
-from astropy.table import Table
-from astropy import constants
 from astropy.nddata import Cutout2D
-from astropy.cosmology import Planck15 as cosmo
 from astropy.visualization.wcsaxes import SphericalCircle
-from astropy.cosmology import z_at_value
-
-from linetools.spectra.io import readspec
 
 from scipy.special import gammainc
 from scipy.integrate import quad
@@ -86,6 +79,34 @@ def fig_lorimer_DM(outfile='fig_lorimer_DM.png'):
     plt.savefig(outfile, dpi=300)
     plt.close()
     print('Wrote {:s}'.format(outfile))
+
+def fig_DM_maps(flag, outfile):
+
+    if flag == 1:
+        map_file = resource_filename('frb', 'data/DM/DM_ISM/fits')
+        cmap=plt.cm.Greens,
+        title = 'ISM'
+    else:
+        return
+    dm_map = hp.read_map(map_file)
+    print('Min/max = {}/{}'.format(np.min(dm_map), np.max(dm_map)))
+
+    fig = plt.figure(figsize=(7., 5))
+    hp.mollview(dm_map, cbar=True, xsize=800, min=10, max=275., cmap=cmap,
+                title=title, unit=r'DM (pc/cm$^3$)')
+    gg = plt.cm.Greys(0.8)
+    hp.graticule(color=gg)
+    hp.projtext(270, 2, r'$270^\circ$', lonlat=True, fontsize=14, color=gg)
+    hp.projtext(0, 2, r'$0^\circ$', lonlat=True, fontsize=14, color=gg)
+    hp.projtext(90, 2, r'$90^\circ$', lonlat=True, fontsize=14, color=gg)
+    hp.projtext(30, 32, r'$30^\circ$', lonlat=True, fontsize=14, color=gg)
+    hp.projtext(26, 62, r'$60^\circ$', lonlat=True, fontsize=14, color=gg)
+    hp.projtext(30, -28, r'$-30^\circ$', lonlat=True, fontsize=14, color=gg)
+    hp.projtext(30, -58, r'$-60^\circ$', lonlat=True, fontsize=14, color=gg)
+
+    print("Writing {:s}".format(outfile))
+    plt.savefig(outfile)
+    plt.close()
 
 
 def fig_hst27_others(outfile='fig_hst27_others.pdf'):
@@ -262,9 +283,8 @@ if __name__ == '__main__':
 
     if len(sys.argv) == 1:
         flg_fig = 0
-        flg_fig += 2**0   # Lorimer DM
-        #flg_fig += 2**1   # HST Cycle 27 -- others
-        #flg_fig += 2**2   # HST Cycle 27 -- population
+        #flg_fig += 2**0   # Lorimer DM
+        flg_fig += 2**2   # DM maps
     else:
         flg_fig = sys.argv[1]
 
