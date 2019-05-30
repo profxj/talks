@@ -58,21 +58,44 @@ def _frac_brightness(n,r,reff):
     return quad(integrand,0,r)[0]/quad(integrand,0,np.inf)[0]
 
 
-def fig_lorimer_DM(outfile='fig_lorimer_DM.png'):
+def fig_lorimer_DM(outfile='fig_lorimer_DM.png', z_frb=0.3):
     """
+    DM Cartoon for the Lorimer burst
 
     """
     set_mplrc()
 
     lorimer = frb.FRB('FRB010724', 'J011806.0-751218.0',
-                        375*units.pc/units.cm**3, z_frb=0.3)
+                        375*units.pc/units.cm**3, z_frb=z_frb)
 
     plt.clf()
     fig = plt.figure(figsize=(14., 10))
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
     #
     frb_figs.sub_cartoon(ax1, ax2, lorimer.coord, lorimer.z, host_DM=50., halos=False,
-                         ymax=lorimer.DM.value, fg_halos=None)
+                         FRB_DM=lorimer.DM.value, fg_halos=None, yscl=0.97)
+
+    # Layout and save
+    plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
+    plt.savefig(outfile, dpi=300)
+    plt.close()
+    print('Wrote {:s}'.format(outfile))
+
+
+def fig_repeater_DM(outfile='fig_repeater_DM.png'):
+    """
+
+    """
+    set_mplrc()
+
+    repeater = frb.FRB.by_name('FRB121102')
+
+    plt.clf()
+    fig = plt.figure(figsize=(14., 10))
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    #
+    frb_figs.sub_cartoon(ax1, ax2, repeater.coord, repeater.z, host_DM=150., halos=False,
+                         ymax=repeater.DM.value, fg_halos=None)
 
     # Layout and save
     plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
@@ -83,17 +106,21 @@ def fig_lorimer_DM(outfile='fig_lorimer_DM.png'):
 def fig_DM_maps(flag, outfile):
 
     if flag == 1:
-        map_file = resource_filename('frb', 'data/DM/DM_ISM/fits')
-        cmap=plt.cm.Greens,
+        map_file = resource_filename('frb', 'data/DM/hp_DM_ISM.fits')
+        cmap=plt.get_cmap('Greens')
         title = 'ISM'
+    elif flag == 2:
+        map_file = resource_filename('frb', 'data/DM/hp_DM_LG.fits')
+        cmap=plt.get_cmap('Blues')
+        mnmx = 20., 300.
     else:
         return
     dm_map = hp.read_map(map_file)
     print('Min/max = {}/{}'.format(np.min(dm_map), np.max(dm_map)))
 
     fig = plt.figure(figsize=(7., 5))
-    hp.mollview(dm_map, cbar=True, xsize=800, min=10, max=275., cmap=cmap,
-                title=title, unit=r'DM (pc/cm$^3$)')
+    hp.mollview(dm_map, cbar=True, xsize=800, min=mnmx[0], max=mnmx[1], cmap=cmap,
+                unit=r'DM (pc/cm$^3$)', norm='log', title=None)
     gg = plt.cm.Greys(0.8)
     hp.graticule(color=gg)
     hp.projtext(270, 2, r'$270^\circ$', lonlat=True, fontsize=14, color=gg)
@@ -105,129 +132,10 @@ def fig_DM_maps(flag, outfile):
     hp.projtext(30, -58, r'$-60^\circ$', lonlat=True, fontsize=14, color=gg)
 
     print("Writing {:s}".format(outfile))
-    plt.savefig(outfile)
-    plt.close()
-
-
-def fig_hst27_others(outfile='fig_hst27_others.pdf'):
-    """
-
-    """
-    frbfigures.utils.set_mplrc()
-
-    # FRBs and hosts
-    frb181112 = frb.FRB.by_name('FRB181112')
-    HG181112 = frbgalaxy.FRBHost.by_name('181112')
-    frb190102 = frb.FRB.by_name('FRB190102')
-    #HG190102 = frbgalaxy.FRBHost.by_name('190102')
-
-    # Start the plot
-    fig = plt.figure(figsize=(15, 7))
-    plt.clf()
-    fsz = 15.
-    isz = 25. # Instrument label size
-    xwidth = 0.38
-    ywidth = 0.9
-    y0 = 0.08
-    ylbl = 0.91
-
-    # FRB 181112
-    for kk, ifrb, img_file in zip([0,1], [frb181112, frb190102],
-                             ['../../181112/Data/FRB181112_VLT_FORS2g.fits',
-                              '../../Cosmic/Data/190102_g_coadded.fits']):
-        hdu = fits.open(img_file)
-        header = hdu[0].header
-        vlt_g = hdu[0].data
-
-        isize = 20.  # arcsec
-        size = units.Quantity((isize, isize), units.arcsec)
-        cutout = Cutout2D(vlt_g, ifrb.coord, size, wcs=WCS(header))
-
-        if kk == 0:
-            axVLT = fig.add_axes([0.10, y0, xwidth, ywidth], projection=cutout.wcs)
-            vmin, vmax = 6103., 7781
-            cmap = plt.get_cmap('Reds')
-            frb_clr = 'black'
-            #c = Ellipse(xy=(ifrb.coord.ra.value, ifrb.coord.dec.value),
-            #                  width=0.5/3600., height=0.1/3600.,
-            #          angle=frb181112.eellipse['theta']-90.,
-            #                  facecolor=frb_clr, edgecolor=frb_clr)#, lw=1, ls='--')
-            c = SphericalCircle((ifrb.coord.ra, ifrb.coord.dec),
-                                0.3*units.arcsec, transform=axVLT.get_transform('icrs'),
-                                edgecolor=frb_clr, facecolor=frb_clr)
-        else:
-            axVLT = fig.add_axes([0.58, y0, xwidth, ywidth], projection=cutout.wcs)
-            vmin, vmax =-30., 500.
-            cmap = plt.get_cmap('Greens')
-            frb_clr = 'cyan'
-            c = SphericalCircle((ifrb.coord.ra, ifrb.coord.dec),
-                            0.1*units.arcsec, transform=axVLT.get_transform('icrs'),
-                            edgecolor=frb_clr, facecolor=frb_clr)
-
-        lon = axVLT.coords[0]
-        lat = axVLT.coords[1]
-        lon.set_ticks(exclude_overlapping=True)
-        lon.set_major_formatter('hh:mm:ss')
-        lon.set_ticks(number=4)
-        #
-        d = axVLT.imshow(cutout.data, cmap=cmap, vmin=vmin, vmax=vmax)
-        plt.grid(color='gray', ls='dashed')
-        axVLT.set_xlabel(r'\textbf{Right Ascension (J2000)}', fontsize=fsz)
-        axVLT.set_ylabel(r'\textbf{Declination (J2000)}', fontsize=fsz, labelpad=-1.)
-        #axVLT.invert_xaxis()
-
-        axVLT.add_patch(c)
-
-        axVLT.text(0.05, ylbl, r'\textbf{'+'{}'.format(ifrb.frb_name)+'}',
-                   transform=axVLT.transAxes, fontsize=isz, ha='left', color='black')
-
-
-    # Layout and save
-    plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
     plt.savefig(outfile, dpi=300)
     plt.close()
-    print('Wrote {:s}'.format(outfile))
 
 
-def fig_hst27_pop(outfile='fig_hst27_pop.pdf'):
-    """
-    BPT and SFR vs. Mstar
-    """
-    ffutils.set_mplrc()
-
-    # FRBs and hosts
-    HG121102 = frbgalaxy.FRBHost.by_name('121102')
-    HG180924 = frbgalaxy.FRBHost.by_name('180924')
-    HG181112 = frbgalaxy.FRBHost.by_name('181112')
-
-    # Edit 1811122 because of Telluric
-    HG181112.neb_lines['[NII] 6584'] = HG181112.neb_lines['[NII] 6584'] / 4
-    #HG181112.neb_lines['Halpha_err'] = HG181112.neb_lines['Halpha_err']
-
-    galaxies = [HG121102, HG180924, HG181112]
-    clrs = ['black', 'blue', 'red']
-    markers = ['s', 'o', 'o']
-
-    # Start the plot
-    fig = plt.figure(figsize=(15, 7))
-    plt.clf()
-    xwidth = 0.38
-    ywidth = 0.9
-    y0 = 0.08
-
-    # BPT
-    axBPT = fig.add_axes([0.10, y0, xwidth, ywidth])
-    ffgalaxies.sub_bpt(axBPT, galaxies, clrs, markers, SDSS_clr='Greys')
-
-    # SFR vs. Mstar
-    axSFMS = fig.add_axes([0.57, y0, xwidth, ywidth])
-    frb_figs.sub_sfms(axSFMS, galaxies, clrs, markers)
-
-    # Layout and save
-    plt.tight_layout(pad=0.2,h_pad=0.1,w_pad=0.1)
-    plt.savefig(outfile, dpi=300)
-    plt.close()
-    print('Wrote {:s}'.format(outfile))
 
 def log_me(val, err):
     xerr = np.array([[np.log10(val) - np.log10(val - err)],
@@ -265,17 +173,16 @@ def main(flg_fig):
 
     # Lorimer DM cartoon
     if flg_fig & (2**0):
-        #fig_hst27_180924()
         fig_lorimer_DM()
 
     # Other images
     if flg_fig & (2**1):
-        fig_hst27_others() #'fig_hst27_others.png')
+        fig_repeater_DM()
 
-    # Other images
+    # DM maps
     if flg_fig & (2**2):
-        fig_hst27_pop() #'fig_hst27_pop.png')
-
+        #fig_DM_maps(1, 'fig_DM_map_ISM.png')
+        fig_DM_maps(2, 'fig_DM_map_LG.png')
 
 
 # Command line execution
@@ -284,7 +191,8 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         flg_fig = 0
         #flg_fig += 2**0   # Lorimer DM
-        flg_fig += 2**2   # DM maps
+        flg_fig += 2**1   # Repeater DM
+        #flg_fig += 2**2   # DM maps
     else:
         flg_fig = sys.argv[1]
 
