@@ -131,7 +131,7 @@ def fig_DM_maps(flag, outfile):
     if flag == 1:
         map_file = resource_filename('frb', 'data/DM/hp_DM_ISM.fits')
         cmap=plt.get_cmap('Greens')
-        title = 'ISM'
+        mnmx = None, None
     elif flag == 2:
         map_file = resource_filename('frb', 'data/DM/hp_DM_LG.fits')
         cmap=plt.get_cmap('Blues')
@@ -205,8 +205,8 @@ def main(flg_fig):
 
     # DM maps
     if flg_fig & (2**2):
-        #fig_DM_maps(1, 'fig_DM_map_ISM.png')
-        fig_DM_maps(2, 'fig_DM_map_LG.png')
+        fig_DM_maps(1, 'fig_DM_map_ISM.png')
+        #fig_DM_maps(2, 'fig_DM_map_LG.png')
 
 
 # Command line execution
@@ -215,8 +215,8 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         flg_fig = 0
         #flg_fig += 2**0   # Lorimer DM
-        flg_fig += 2**1   # Repeater DM and others
-        #flg_fig += 2**2   # DM maps
+        #flg_fig += 2**1   # Repeater DM and others
+        flg_fig += 2**2   # DM maps
     else:
         flg_fig = sys.argv[1]
 
