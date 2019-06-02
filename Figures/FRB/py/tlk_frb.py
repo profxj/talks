@@ -131,7 +131,7 @@ def fig_DM_maps(flag, outfile):
     if flag == 1:
         map_file = resource_filename('frb', 'data/DM/hp_DM_ISM.fits')
         cmap=plt.get_cmap('Greens')
-        mnmx = None, None
+        mnmx = 20., 500
     elif flag == 2:
         map_file = resource_filename('frb', 'data/DM/hp_DM_LG.fits')
         cmap=plt.get_cmap('Blues')
