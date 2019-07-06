@@ -1,0 +1,99 @@
+\documentclass[12pt,letterpaper]{article}
+
+%\font\bfit = cmbxti10 scaled \magstephalf
+
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{ulem}
+\usepackage{fancyheadings}
+\usepackage[usenames]{color}
+ 
+\pretolerance=10000
+\textwidth=6.7in
+\textheight=8.9in
+\topmargin=-0.6in
+\headheight=.15in
+\hoffset = -0.2in
+\headsep=.35in
+\oddsidemargin=0in
+\evensidemargin=0in
+\parindent=2em
+\parskip=0.2ex
+
+\input{/u/xavier/bin/defs}
+\input{/u/xavier/bin/latex}
+\def\mkll{\kappa_{\rm LL}}
+\def\mztkll{{\tilde\kappa}_{912}}
+\def\mzq{z_q}
+\def\mnull{\nu_{\rm 912}}
+\def \mteff {\tau_{\rm eff,LL}}
+\def\omegam{\Omega_{\rm m}}
+\def \mncgm {N_{\rm H, CGM}}
+\def \mnhicgm {N_{\rm HI, CGM}}
+\def \mrcgm {r_{\rm CGM}}
+
+\pagestyle{empty}
+
+\special{papersize=8.5in,11in}
+
+\begin{document}
+
+{\Large
+
+
+% EW
+$$
+{\color{Blue} W = \smm_i (1-F_{i}) \, \Delta\lambda
+}
+$$
+
+% sigma(EW)
+$$
+{\color{Blue} \sigma(W) = \Delta\lambda \ltp \smm_i \sigma(F_{i})^2 \rtp^{1/2}
+}
+$$
+
+% Flux
+$$
+{\color{Blue} F_i = \smm_j^{\rm row} g_j f_{i,j}
+}
+$$
+
+% sig(Flux)
+$$
+{\color{Blue} \sigma(F_i)^2 = \smm_j^{\rm row} g_j^2 \sigma(f_{i,j})^2
+}
+$$
+
+% sigma(f)
+$$
+{\color{Blue} \sigma(f_{i,j})^2 = N_{i,j}
+}
+$$
+
+% Sky sub
+$$
+{\color{Blue} f_{i,j} = f_{i,j}^{\rm tot} - f_{i,j}^{sky}
+}
+$$
+
+% Sky sub
+$$
+{\color{Blue} \sigma(f_{i,j})^2 = N_{i,j}^{\rm obj} + N_{i,j}^{\rm sky}
+}
+$$
+
+% Survival function
+$$
+{\color{Blue} S(t) = 1 - \int_0^1 f(t') \, dt'
+}
+$$
+
+
+
+
+}
+
+\end{document}
